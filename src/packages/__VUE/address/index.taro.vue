@@ -1,89 +1,81 @@
 <template>
   <nut-popup
     position="bottom"
+    :lock-scroll="lockScroll"
     @close="close"
     @click-overlay="clickOverlay"
     @open="closeWay = 'self'"
     v-model:visible="showPopup"
-    :class="classes"
   >
     <view class="nut-address">
       <view class="nut-address__header">
         <view class="arrow-back" @click="switchModule">
           <nut-icon
+            v-bind="$attrs"
             :name="backBtnIcon"
             color="#cccccc"
-            v-if="privateType == 'custom' && type == 'exist' && backBtnIcon"
+            v-show="type == 'exist' && privateType == 'custom' && backBtnIcon"
           ></nut-icon>
         </view>
 
         <view class="nut-address__header__title">
-          {{ privateType == 'custom' ? customAddressTitle : existAddressTitle }}
+          {{
+            privateType == 'custom'
+              ? customAddressTitle || translate('selectRegion')
+              : existAddressTitle || translate('deliveryTo')
+          }}
         </view>
 
         <view class="arrow-close" @click="handClose('cross')">
-          <nut-icon v-if="closeBtnIcon" :name="closeBtnIcon" color="#cccccc" size="18px"></nut-icon>
+          <nut-icon v-bind="$attrs" v-if="closeBtnIcon" :name="closeBtnIcon" color="#cccccc" size="18px"></nut-icon>
         </view>
       </view>
 
       <!-- 请选择 -->
-      <view class="custom-address" v-if="privateType == 'custom'">
-        <view class="region-tab">
+      <view class="custom-address" v-if="['custom', 'custom2'].includes(privateType)">
+        <view class="nut-address-region-tab" ref="tabRegion">
           <view
-            class="tab-item"
-            :class="[index == tabIndex ? 'active' : '', key]"
-            v-for="(item, key, index) in selectedRegion"
+            :class="['tab-item', index == tabIndex ? 'active' : '']"
+            v-for="(item, index) in selectedRegion"
             :key="index"
-            :ref="key"
-            @click="changeRegionTab(item, key, index)"
+            @click="changeRegionTab(item, index)"
           >
-            <view>{{ getTabName(item, index) }}</view>
+            <view>{{ getTabName(item, index) }} </view>
+            <view :class="{ 'region-tab-line-mini': true, active: index == tabIndex }"></view>
           </view>
-
-          <view class="region-tab-line" ref="regionLine" :style="{ left: lineDistance + 'px' }"></view>
+          <view class="active tab-item" v-if="tabIndex == selectedRegion.length">
+            <view>{{ getTabName(null, selectedRegion.length) }} </view>
+            <view class="region-tab-line-mini active"></view>
+          </view>
         </view>
 
-        <view class="region-con">
+        <view class="region-con" v-if="privateType == 'custom'">
           <ul class="region-group">
             <li
-              v-for="(item, index) in regionList[tabName[tabIndex]]"
+              v-for="(item, index) in regionList"
               :key="index"
-              class="region-item"
-              :class="[selectedRegion[tabName[tabIndex]].id == item.id ? 'active' : '']"
+              :class="['region-item', selectedRegion[tabIndex]?.id == item.id ? 'active' : '']"
               @click="nextAreaList(item)"
             >
-              <nut-icon
-                class="region-item-icon"
-                type="self"
-                :name="selectedIcon"
-                color="#FA2C19"
-                size="13px"
-                v-if="selectedRegion[tabName[tabIndex]].id == item.id"
-              ></nut-icon
-              >{{ item.name }}
+              <div>
+                <nut-icon
+                  class="region-item-icon"
+                  type="self"
+                  v-bind="$attrs"
+                  :name="selectedIcon"
+                  size="13px"
+                  v-if="selectedRegion[tabIndex]?.id == item.id"
+                ></nut-icon
+                >{{ item.name }}
+              </div>
             </li>
           </ul>
         </view>
-      </view>
 
-      <view class="custom-address" v-else-if="privateType === 'custom2'">
-        <view class="region-tab">
-          <view
-            class="tab-item"
-            :class="[index == tabIndex ? 'active' : '']"
-            v-for="(item, key, index) in selectedRegion"
-            :key="index"
-            :ref="key"
-            @click="changeRegionTab(item, key, index)"
-          >
-            <view>{{ getTabName(item, index) }}</view>
-          </view>
-          <view class="region-tab-line" ref="regionLine" :style="{ left: lineDistance + 'px' }"></view>
-        </view>
-        <view class="elevator-group" v-if="showPopup">
+        <view class="elevator-group" v-else>
           <nut-elevator
             :height="height"
-            :index-list="regionList[tabName[tabIndex]]"
+            :index-list="transformData(regionList)"
             @click-item="handleElevatorItem"
           ></nut-elevator>
         </view>
@@ -103,8 +95,8 @@
               <nut-icon
                 class="exist-item-icon"
                 type="self"
+                v-bind="$attrs"
                 :name="item.selectedAddress ? selectedIcon : defaultIcon"
-                :color="item.selectedAddress ? '#FA2C19' : ''"
                 size="13px"
               ></nut-icon>
               <div class="exist-item-info">
@@ -121,20 +113,22 @@
             </li>
           </ul>
         </div>
-
         <div class="choose-other" @click="switchModule" v-if="isShowCustomAddress">
-          <div class="btn">{{ customAndExistTitle }}</div>
+          <div class="btn">{{ customAndExistTitle || translate('chooseAnotherAddress') }}</div>
         </div>
+        <template v-if="!isShowCustomAddress">
+          <slot name="bottom"></slot>
+        </template>
       </view>
     </view>
   </nut-popup>
 </template>
 <script lang="ts">
 import { reactive, ref, toRefs, watch, computed } from 'vue';
-import { createComponent } from '../../utils/create';
-import Taro from '@tarojs/taro';
+import { popupProps } from '../popup/props';
+import { createComponent } from '@/packages/utils/create';
 
-const { create, componentName } = createComponent('address');
+const { create, componentName, translate } = createComponent('address');
 
 interface RegionData {
   id: string;
@@ -158,6 +152,11 @@ interface AddressList {
 export default create({
   inheritAttrs: false,
   props: {
+    ...popupProps,
+    modelValue: {
+      type: Array,
+      default: () => []
+    },
     visible: {
       type: Boolean,
       default: false
@@ -168,7 +167,7 @@ export default create({
     },
     customAddressTitle: {
       type: String,
-      default: '请选择所在地区'
+      default: ''
     },
     province: {
       type: Array,
@@ -196,11 +195,11 @@ export default create({
     }, // 现存地址列表
     existAddressTitle: {
       type: String,
-      default: '配送至'
+      default: ''
     },
     customAndExistTitle: {
       type: String,
-      default: '选择其他地址'
+      default: ''
     },
     defaultIcon: {
       // 地址选择列表前 - 默认的图标
@@ -225,9 +224,13 @@ export default create({
     height: {
       type: [String, Number],
       default: '200px'
+    },
+    columnsPlaceholder: {
+      type: [String, Array],
+      default: ''
     }
   },
-  emits: ['update:visible', 'type', 'change', 'selected', 'close', 'close-mask', 'switch-module'],
+  emits: ['update:visible', 'update:modelValue', 'type', 'change', 'selected', 'close', 'close-mask', 'switch-module'],
 
   setup(props, { emit }) {
     const classes = computed(() => {
@@ -236,8 +239,6 @@ export default create({
         [prefixCls]: true
       };
     });
-
-    const regionLine = ref<null | HTMLElement>(null);
 
     const tabItemRef = reactive({
       province: ref<null | HTMLElement>(null),
@@ -249,8 +250,22 @@ export default create({
     const privateType = ref(props.type);
     const tabIndex = ref(0);
     const tabName = ref(['province', 'city', 'country', 'town']);
+    const tabNameDefault = ref(['']);
 
     const isCustom2 = computed(() => props.type === 'custom2');
+
+    const regionList = computed(() => {
+      switch (tabIndex.value) {
+        case 0:
+          return props.province;
+        case 1:
+          return props.city;
+        case 2:
+          return props.country;
+        default:
+          return props.town;
+      }
+    });
 
     const transformData = (data: RegionData[]) => {
       if (!Array.isArray(data)) throw new TypeError('params muse be array.');
@@ -278,29 +293,14 @@ export default create({
             list: [].concat(item)
           });
         } else {
-          newData[index] = {
-            title: item.title,
-            list: newData[index].list.concat(item)
-          };
+          newData[index].list.push(item);
         }
       });
 
       return newData;
     };
 
-    const regionList = reactive({
-      province: isCustom2.value ? transformData(props.province) : props.province,
-      city: isCustom2.value ? transformData(props.city) : props.city,
-      country: isCustom2.value ? transformData(props.country) : props.country,
-      town: isCustom2.value ? transformData(props.town) : props.town
-    });
-
-    const selectedRegion = reactive({
-      province: {} as RegionData,
-      city: {} as RegionData,
-      country: {} as RegionData,
-      town: {} as RegionData
-    }); //已选择的 省、市、县、镇
+    let selectedRegion = ref<RegionData[]>([]);
 
     let selectedExistAddress = reactive({}); // 当前选择的地址
 
@@ -308,16 +308,45 @@ export default create({
 
     const lineDistance = ref(20);
 
-    //获取已选地区列表名称
-    const getTabName = (item: RegionData, index: number) => {
-      if (item.name) return item.name;
-
-      if (tabIndex.value < index) {
-        return item.name;
-      } else {
-        return '请选择';
+    // 设置选中省市县
+    const initCustomSelected = () => {
+      const defaultValue = props.modelValue;
+      const num = defaultValue.length;
+      if (num > 0) {
+        tabIndex.value = num - 1;
+        if (regionList.value.length == 0) {
+          tabIndex.value = 0;
+          return;
+        }
+        for (let index = 0; index < num; index++) {
+          let arr: [] = [];
+          switch (index) {
+            case 0:
+              arr = props.province;
+              break;
+            case 1:
+              arr = props.city;
+              break;
+            case 2:
+              arr = props.country;
+              break;
+            default:
+              arr = props.town;
+          }
+          selectedRegion.value[index] = arr.filter((item: RegionData) => item.id == defaultValue[index])[0];
+        }
       }
     };
+
+    const getTabName = (item: RegionData | null, index: number) => {
+      if (item && item.name) return item.name;
+      if (tabIndex.value < index && item) {
+        return item.name;
+      } else {
+        return props.columnsPlaceholder[index] || translate('select');
+      }
+    };
+
     // 手动关闭 点击叉号(cross)，或者蒙层(mask)
     const handClose = (type = 'self') => {
       if (!props.closeBtnIcon) return;
@@ -326,56 +355,45 @@ export default create({
 
       showPopup.value = false;
     };
+
     // 点击遮罩层关闭
     const clickOverlay = () => {
       closeWay.value = 'mask';
     };
-    // 移动下面的红线
-    const lineAnimation = () => {
-      setTimeout(() => {
-        Taro.createSelectorQuery()
-          .selectAll(`.${tabName.value[tabIndex.value]}`)
-          .boundingClientRect((rects) => {
-            (rects as any).forEach((rect) => {
-              if (rect.width > 0) lineDistance.value = rect.left;
-            });
-          })
-          .exec();
-      }, 100);
-    };
+
     // 切换下一级列表
     const nextAreaList = (item: RegionData | string) => {
-      // onchange 接收的参数
-      const calBack = {
-        next: '',
-        value: '',
-        custom: tabName.value[tabIndex.value]
+      const tab = tabIndex.value;
+
+      const callBackParams: {
+        next?: string;
+        value?: RegionData;
+        custom: string;
+      } = {
+        custom: tabName.value[tab]
       };
 
-      (selectedRegion as any)[tabName.value[tabIndex.value]] = item;
+      selectedRegion.value[tab] = item;
 
-      for (let i = tabIndex.value; i < tabIndex.value - 1; i++) {
-        (selectedRegion as any)[tabName.value[i + 1]] = {};
+      for (let i = tab + 2; i < 4; i++) {
+        selectedRegion.value.splice(i, 1);
       }
+      if (tab < 3) {
+        tabIndex.value = tab + 1;
 
-      if (tabIndex.value < 3) {
-        tabIndex.value = tabIndex.value + 1;
+        callBackParams.next = tabName.value[tabIndex.value];
+        callBackParams.value = item;
 
-        lineAnimation();
-
-        // 切换下一个
-        calBack.next = tabName.value[tabIndex.value];
-        calBack.value = item as string;
-        emit('change', calBack);
+        emit('change', callBackParams);
       } else {
         handClose();
+        emit('update:modelValue');
       }
     };
     //切换地区Tab
-    const changeRegionTab = (item: RegionData, key: number, index: number) => {
+    const changeRegionTab = (item: RegionData, index: number) => {
       if (getTabName(item, index)) {
         tabIndex.value = index;
-        lineAnimation();
       }
     };
 
@@ -384,11 +402,9 @@ export default create({
       const copyExistAdd = props.existAddress as AddressList[];
       let prevExistAdd = {};
 
-      copyExistAdd.forEach((list, index) => {
-        if (list && (list as AddressList).selectedAddress) {
-          prevExistAdd = list;
-        }
-        (list as AddressList).selectedAddress = false;
+      copyExistAdd.forEach((list: AddressList) => {
+        if (list && list.selectedAddress) prevExistAdd = list;
+        list.selectedAddress = false;
       });
 
       item.selectedAddress = true;
@@ -401,68 +417,54 @@ export default create({
     };
     // 初始化
     const initAddress = () => {
-      for (let i = 0; i < tabName.value.length; i++) {
-        (selectedRegion as any)[tabName.value[i]] = {};
-      }
+      selectedRegion.value = [];
       tabIndex.value = 0;
-      lineAnimation();
     };
 
     // 关闭
     const close = () => {
-      const resCopy = Object.assign(
-        {
-          addressIdStr: '',
-          addressStr: ''
-        },
-        selectedRegion
-      );
+      const data = {
+        addressIdStr: '',
+        addressStr: '',
+        province: selectedRegion.value[0],
+        city: selectedRegion.value[1],
+        country: selectedRegion.value[2],
+        town: selectedRegion.value[3]
+      };
 
-      const res = {
+      const callBackParams = {
         data: {},
         type: privateType.value
       };
 
-      if (privateType.value == 'custom' || privateType.value == 'custom2') {
-        const { province, city, country, town } = resCopy;
+      if (['custom', 'custom2'].includes(privateType.value)) {
+        [0, 1, 2, 3].forEach((i) => {
+          const item = selectedRegion.value[i];
+          data.addressIdStr += `${i ? '_' : ''}${(item && item.id) || 0}`;
+          data.addressStr += (item && item.name) || '';
+        });
 
-        resCopy.addressIdStr = [
-          (province as RegionData).id || 0,
-          (city as RegionData).id || 0,
-          (country as RegionData).id || 0,
-          (town as RegionData).id || 0
-        ].join('_');
-        resCopy.addressStr = [
-          (province as RegionData).name,
-          (city as RegionData).name,
-          (country as RegionData).name,
-          (town as RegionData).name
-        ].join('');
-        res.data = resCopy;
+        callBackParams.data = data;
       } else {
-        res.data = selectedExistAddress;
+        callBackParams.data = selectedExistAddress;
       }
 
       initAddress();
 
       if (closeWay.value == 'self') {
-        emit('close', res);
+        emit('close', callBackParams);
       } else {
         emit('close-mask', { closeWay: closeWay });
       }
+
       emit('update:visible', false);
     };
 
     // 选择其他地址
     const switchModule = () => {
-      if (privateType.value == 'exist') {
-        privateType.value = 'custom';
-      } else {
-        privateType.value = 'exist';
-      }
-
+      const type = privateType.value;
+      privateType.value = type == 'exist' ? 'custom' : 'exist';
       initAddress();
-
       emit('switch-module', { type: privateType.value });
     };
 
@@ -480,46 +482,9 @@ export default create({
     watch(
       () => showPopup.value,
       (value) => {
-        if (value == false) {
-          close();
+        if (value) {
+          initCustomSelected();
         }
-      }
-    );
-
-    watch(
-      () => props.province,
-      (value) => {
-        regionList.province = isCustom2.value ? transformData(value) : value;
-      }
-    );
-    watch(
-      () => props.city,
-      (value) => {
-        regionList.city = isCustom2.value ? transformData(value) : value;
-      }
-    );
-    watch(
-      () => props.country,
-      (value) => {
-        regionList.country = isCustom2.value ? transformData(value) : value;
-      }
-    );
-    watch(
-      () => props.town,
-      (value) => {
-        regionList.town = isCustom2.value ? transformData(value) : value;
-      }
-    );
-
-    watch(
-      () => props.existAddress,
-      (value) => {
-        //  existAddress.value = value;
-        value.forEach((item, index) => {
-          if ((item as AddressList).selectedAddress) {
-            selectedExistAddress = item as {};
-          }
-        });
       }
     );
 
@@ -537,7 +502,6 @@ export default create({
       close,
       getTabName,
       nextAreaList,
-      regionLine,
       lineDistance,
       changeRegionTab,
       selectedExist,
@@ -545,7 +509,9 @@ export default create({
       handClose,
       handleElevatorItem,
       ...toRefs(props),
-      ...toRefs(tabItemRef)
+      ...toRefs(tabItemRef),
+      translate,
+      transformData
     };
   }
 });

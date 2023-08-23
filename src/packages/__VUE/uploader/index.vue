@@ -2,46 +2,26 @@
   <view :class="classes">
     <view class="nut-uploader__slot" v-if="$slots.default">
       <slot></slot>
-      <template v-if="maximum - fileList.length">
-        <input
-          class="nut-uploader__input"
-          v-if="capture"
-          type="file"
-          capture="camera"
-          :accept="accept"
-          :multiple="multiple"
-          :name="name"
-          :disabled="disabled"
-          @change="onChange"
-        />
-        <input
-          class="nut-uploader__input"
-          v-else
-          type="file"
-          :accept="accept"
-          :multiple="multiple"
-          :name="name"
-          :disabled="disabled"
-          @change="onChange"
-        />
-      </template>
+      <component :is="renderInput" @change="onChange" v-if="maximum - fileList.length"></component>
     </view>
 
     <view class="nut-uploader__preview" :class="[listType]" v-for="(item, index) in fileList" :key="item.uid">
       <view class="nut-uploader__preview-img" v-if="listType == 'picture' && !$slots.default">
-        <view class="nut-uploader__preview__progress" v-if="item.status == 'ready'">
+        <view class="nut-uploader__preview__progress" v-if="item.status != 'success'">
+          <nut-icon
+            color="#fff"
+            :name="item.status == 'error' ? 'failure' : 'loading'"
+            v-if="item.status != 'ready'"
+          ></nut-icon>
           <view class="nut-uploader__preview__progress__msg">{{ item.message }}</view>
         </view>
-        <view class="nut-uploader__preview__progress" v-else-if="item.status != 'success'">
-          <nut-icon color="#fff" :name="item.status == 'error' ? 'failure' : 'loading'"></nut-icon>
-          <view class="nut-uploader__preview__progress__msg">{{ item.message }}</view>
-        </view>
+
         <nut-icon
           v-if="isDeletable"
-          color="rgba(0,0,0,0.6)"
+          v-bind="$attrs"
           @click="onDelete(item, index)"
           class="close"
-          name="failure"
+          :name="deleteIcon"
         ></nut-icon>
         <img
           class="nut-uploader__preview-img__c"
@@ -54,13 +34,16 @@
             <nut-icon color="#808080" name="link"></nut-icon>&nbsp;{{ item.name }}
           </view>
         </view>
+
         <view class="tips">{{ item.name }}</view>
       </view>
+
       <view class="nut-uploader__preview-list" v-else-if="listType == 'list'">
         <view @click="fileItemClick(item)" class="nut-uploader__preview-img__file__name" :class="[item.status]">
           <nut-icon name="link" />&nbsp;{{ item.name }}
         </view>
         <nut-icon
+          v-if="isDeletable"
           class="nut-uploader__preview-img__file__del"
           @click="onDelete(item, index)"
           color="#808080"
@@ -76,53 +59,26 @@
         </nut-progress>
       </view>
     </view>
+
     <view
       class="nut-uploader__upload"
       :class="[listType]"
       v-if="listType == 'picture' && !$slots.default && maximum - fileList.length"
     >
-      <nut-icon :size="uploadIconSize" color="#808080" :name="uploadIcon"></nut-icon>
-      <input
-        class="nut-uploader__input"
-        v-if="capture"
-        type="file"
-        capture="camera"
-        :accept="accept"
-        :multiple="multiple"
-        :name="name"
-        :disabled="disabled"
-        @change="onChange"
-      />
-      <input
-        class="nut-uploader__input"
-        v-else
-        type="file"
-        :accept="accept"
-        :multiple="multiple"
-        :name="name"
-        :disabled="disabled"
-        @change="onChange"
-      />
+      <nut-icon v-bind="$attrs" :size="uploadIconSize" color="#808080" :name="uploadIcon"></nut-icon>
+
+      <component :is="renderInput" @change="onChange"></component>
     </view>
   </view>
 </template>
 
 <script lang="ts">
-import { computed, reactive } from 'vue';
-import { createComponent } from '../../utils/create';
+import { computed, reactive, h, PropType } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 import { Uploader, UploadOptions } from './uploader';
-const { componentName, create } = createComponent('uploader');
-export type FileItemStatus = 'ready' | 'uploading' | 'success' | 'error';
-export class FileItem {
-  status: FileItemStatus = 'ready';
-  message: string = '准备完成';
-  uid: string = new Date().getTime().toString();
-  name?: string;
-  url?: string;
-  type?: string;
-  percentage: string | number = 0;
-  formData: FormData = new FormData();
-}
+import { FileItem } from './type';
+import { funInterceptor, Interceptor } from '@/packages/utils/util';
+const { componentName, create, translate } = createComponent('uploader');
 export default create({
   props: {
     name: { type: String, default: 'file' },
@@ -149,18 +105,22 @@ export default create({
     multiple: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     autoUpload: { type: Boolean, default: true },
+    deleteIcon: { type: String, default: 'failure' },
     beforeUpload: {
       type: Function,
       default: null
     },
-    beforeDelete: {
+    beforeXhrUpload: {
       type: Function,
-      default: (file: FileItem, files: FileItem[]) => {
+      default: null
+    },
+    beforeDelete: {
+      type: Function as PropType<Interceptor>,
+      default: (file: import('./type').FileItem, files: import('./type').FileItem[]) => {
         return true;
       }
     },
     onChange: { type: Function }
-    // customRequest: { type: Function }
   },
   emits: [
     'start',
@@ -174,7 +134,7 @@ export default create({
     'file-item-click'
   ],
   setup(props, { emit }) {
-    const fileList = reactive(props.fileList) as Array<FileItem>;
+    const fileList: import('./type').FileItem[] = reactive(props.fileList) as Array<import('./type').FileItem>;
     let uploadQueue: Promise<Uploader>[] = [];
 
     const classes = computed(() => {
@@ -184,15 +144,30 @@ export default create({
       };
     });
 
+    const renderInput = () => {
+      let params: any = {
+        class: `nut-uploader__input`,
+        type: 'file',
+        accept: props.accept,
+        multiple: props.multiple,
+        name: props.name,
+        disabled: props.disabled
+      };
+
+      if (props.capture) params.capture = 'camera';
+
+      return h('input', params);
+    };
+
     const clearInput = (el: HTMLInputElement) => {
       el.value = '';
     };
 
-    const fileItemClick = (fileItem: FileItem) => {
+    const fileItemClick = (fileItem: import('./type').FileItem) => {
       emit('file-item-click', { fileItem });
     };
 
-    const executeUpload = (fileItem: FileItem, index: number) => {
+    const executeUpload = (fileItem: import('./type').FileItem, index: number) => {
       const uploadOption = new UploadOptions();
       uploadOption.url = props.url;
       uploadOption.formData = fileItem.formData;
@@ -201,22 +176,26 @@ export default create({
       uploadOption.xhrState = props.xhrState as number;
       uploadOption.headers = props.headers;
       uploadOption.withCredentials = props.withCredentials;
+      uploadOption.beforeXhrUpload = props.beforeXhrUpload;
+      try {
+        uploadOption.sourceFile = fileItem.formData.get(props.name);
+      } catch (error) {}
       uploadOption.onStart = (option: UploadOptions) => {
         fileItem.status = 'ready';
-        fileItem.message = '准备上传';
+        fileItem.message = translate('readyUpload');
         clearUploadQueue(index);
         emit('start', option);
       };
       uploadOption.onProgress = (event: ProgressEvent<XMLHttpRequestEventTarget>, option: UploadOptions) => {
         fileItem.status = 'uploading';
-        fileItem.message = '上传中';
+        fileItem.message = translate('uploading');
         fileItem.percentage = ((event.loaded / event.total) * 100).toFixed(0);
         emit('progress', { event, option, percentage: fileItem.percentage });
       };
 
       uploadOption.onSuccess = (responseText: XMLHttpRequest['responseText'], option: UploadOptions) => {
         fileItem.status = 'success';
-        fileItem.message = '上传成功';
+        fileItem.message = translate('success');
         emit('success', {
           responseText,
           option,
@@ -226,7 +205,7 @@ export default create({
       };
       uploadOption.onFailure = (responseText: XMLHttpRequest['responseText'], option: UploadOptions) => {
         fileItem.status = 'error';
-        fileItem.message = '上传失败';
+        fileItem.message = translate('error');
         emit('failure', {
           responseText,
           option,
@@ -244,11 +223,13 @@ export default create({
         );
       }
     };
+
     const clearUploadQueue = (index = -1) => {
       if (index > -1) {
         uploadQueue.splice(index, 1);
       } else {
         uploadQueue = [];
+        fileList.splice(0, fileList.length);
       }
     };
     const submit = () => {
@@ -270,7 +251,7 @@ export default create({
         fileItem.status = 'ready';
         fileItem.type = file.type;
         fileItem.formData = formData;
-        fileItem.message = '等待上传';
+        fileItem.message = translate('waitingUpload');
         executeUpload(fileItem, index);
 
         if (props.isPreview && file.type.includes('image')) {
@@ -301,22 +282,28 @@ export default create({
       if (oversizes.length) {
         emit('oversize', oversizes);
       }
-      if (files.length > maximum) {
-        files.splice(maximum - 1, files.length - maximum);
+      let currentFileLength = files.length + fileList.length;
+      if (currentFileLength > maximum) {
+        files.splice(files.length - (currentFileLength - maximum));
       }
       return files;
     };
-    const onDelete = (file: FileItem, index: number) => {
+
+    const deleted = (file: import('./type').FileItem, index: number) => {
+      fileList.splice(index, 1);
+      emit('delete', {
+        file,
+        fileList,
+        index
+      });
+    };
+
+    const onDelete = (file: import('./type').FileItem, index: number) => {
       clearUploadQueue(index);
-      if (props.beforeDelete(file, fileList)) {
-        fileList.splice(index, 1);
-        emit('delete', {
-          file,
-          fileList
-        });
-      } else {
-        console.log('用户阻止了删除！');
-      }
+      funInterceptor(props.beforeDelete, {
+        args: [file, fileList],
+        done: () => deleted(file, index)
+      });
     };
 
     const onChange = (event: InputEvent) => {
@@ -327,13 +314,9 @@ export default create({
       let { files } = $el;
 
       if (props.beforeUpload) {
-        props.beforeUpload(files).then((f: Array<File>) => {
-          const _files: File[] = filterFiles(new Array<File>().slice.call(f));
-          readFile(_files);
-        });
+        props.beforeUpload(files).then((f: Array<File>) => changeReadFile(f));
       } else {
-        const _files: File[] = filterFiles(new Array<File>().slice.call(files));
-        readFile(_files);
+        changeReadFile(files);
       }
 
       emit('change', {
@@ -346,6 +329,11 @@ export default create({
       }
     };
 
+    const changeReadFile = (f: any) => {
+      const _files: File[] = filterFiles(new Array<File>().slice.call(f));
+      readFile(_files);
+    };
+
     return {
       onChange,
       onDelete,
@@ -353,7 +341,8 @@ export default create({
       classes,
       fileItemClick,
       clearUploadQueue,
-      submit
+      submit,
+      renderInput
     };
   }
 });

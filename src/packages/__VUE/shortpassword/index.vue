@@ -11,9 +11,10 @@
       @click-close-icon="closeIcon"
       :close-on-click-overlay="closeOnClickOverlay"
       @click-overlay="close"
+      :teleportDisable="teleportDisable"
     >
-      <view class="nut-shortpsd-title">{{ title }}</view>
-      <view class="nut-shortpsd-subtitle">{{ desc }}</view>
+      <view class="nut-shortpsd-title">{{ title || translate('title') }}</view>
+      <view class="nut-shortpsd-subtitle">{{ desc || translate('desc') }}</view>
 
       <div class="nut-input-normalw">
         <input
@@ -34,35 +35,35 @@
       </div>
       <view class="nut-shortpsd-message">
         <view class="nut-shortpsd-error">{{ errorMsg }}</view>
-        <view class="nut-shortpsd-forget" v-if="tips">
+        <view class="nut-shortpsd-forget" v-if="tips || translate('tips')">
           <nut-icon class="icon" size="11px" name="tips"></nut-icon>
-          <view @click="onTips">{{ tips }}</view>
+          <view @click="onTips">{{ tips || translate('tips') }}</view>
         </view>
       </view>
       <view v-if="!noButton" class="nut-shortpsd-footer">
-        <view class="nut-shortpsd-cancle" @click="close">取消</view>
-        <view class="nut-shortpsd-sure" @click="sureClick">确认</view>
+        <view class="nut-shortpsd-cancle" @click="close">{{ translate('cancel') }}</view>
+        <view class="nut-shortpsd-sure" @click="sureClick">{{ translate('confirm') }}</view>
       </view>
     </nut-popup>
   </view>
 </template>
 <script lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { createComponent } from '../../utils/create';
-const { create } = createComponent('shortpassword');
+import { createComponent } from '@/packages/utils/create';
+const { create, translate } = createComponent('shortpassword');
 export default create({
   props: {
     title: {
       type: String,
-      default: '请输入密码'
+      default: ''
     },
     desc: {
       type: String,
-      default: '您使用了虚拟资产，请进行验证'
+      default: ''
     },
     tips: {
       type: String,
-      default: '忘记密码'
+      default: ''
     },
     visible: {
       type: Boolean,
@@ -87,6 +88,10 @@ export default create({
     length: {
       type: [String, Number], //4～6
       default: 6
+    },
+    teleportDisable: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['update:modelValue', 'update:visible', 'complete', 'change', 'ok', 'tips', 'close', 'cancel'],
@@ -112,7 +117,11 @@ export default create({
       () => props.modelValue,
       (value) => {
         realInput.value = value;
-        console.log('watch', value);
+        emit('update:modelValue', value);
+      },
+      {
+        deep: true,
+        immediate: true
       }
     );
     function changeValue(e: Event) {
@@ -170,7 +179,8 @@ export default create({
       onTips,
       show,
       systemStyle,
-      closeIcon
+      closeIcon,
+      translate
     };
   }
 });

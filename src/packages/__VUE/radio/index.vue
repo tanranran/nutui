@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed, h, inject } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 import nutIcon from '../icon/index.vue';
 const { componentName, create } = createComponent('radio');
 
@@ -15,7 +15,7 @@ export default create({
       default: 'round' // button
     },
     label: {
-      type: [String, Number],
+      type: [String, Number, Boolean],
       default: ''
     },
     iconName: {
@@ -28,14 +28,22 @@ export default create({
     },
     iconSize: {
       type: [String, Number],
-      default: 18
+      default: ''
+    },
+    iconClassPrefix: {
+      type: String,
+      default: 'nut-icon'
+    },
+    iconFontClassName: {
+      type: String,
+      default: 'nutui-iconfont'
     }
   },
   setup(props, { emit, slots }) {
-    let parent: any = inject('parent');
+    let parent: any = inject('parent', null);
 
     const isCurValue = computed(() => {
-      return parent.label.value == props.label;
+      return parent.label.value === props.label;
     });
 
     const color = computed(() => {
@@ -51,11 +59,13 @@ export default create({
     });
 
     const renderIcon = () => {
-      const { iconName, iconSize, iconActiveName } = props;
+      const { iconName, iconSize, iconActiveName, iconClassPrefix, iconFontClassName } = props;
       return h(nutIcon, {
         name: isCurValue.value ? iconActiveName : iconName,
         size: iconSize,
-        class: color.value
+        class: color.value,
+        classPrefix: iconClassPrefix,
+        fontClassName: iconFontClassName
       });
     };
 

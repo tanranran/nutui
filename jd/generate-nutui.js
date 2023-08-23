@@ -2,17 +2,16 @@ const package = require('../package.json');
 const config = require('../src/config.json');
 const path = require('path');
 const fs = require('fs-extra');
-let importStr = `import { App } from 'vue';\n`;
+let importStr = `import { App } from 'vue';
+import Locale from './locale';\n`;
 let importScssStr = `\n`;
 const packages = [];
 config.nav.map((item) => {
   item.packages.forEach((element) => {
-    let { name, show, type, exportEmpty } = element;
-    if (show || exportEmpty) {
-      importStr += `import ${name} from './__VUE/${name.toLowerCase()}/index${type === 'methods' ? '' : '.vue'}';\n`;
-      importScssStr += `import './__VUE/${name.toLowerCase()}/index.scss';\n`;
-      packages.push(name);
-    }
+    let { name, type } = element;
+    importStr += `import ${name} from './__VUE/${name.toLowerCase()}/index${type === 'methods' ? '' : '.vue'}';\n`;
+    importScssStr += `import './__VUE/${name.toLowerCase()}/index.scss';\n`;
+    packages.push(name);
   });
 });
 let installFunction = `function install(app: App) {
@@ -28,8 +27,8 @@ let installFunction = `function install(app: App) {
 let fileStrBuild = `${importStr}
 ${installFunction}
 const version = '${package.version}';
-export { install, version, ${packages.join(',')}};
-export default { install, version};`;
+export { install, version, Locale, ${packages.join(',')}};
+export default { install, version, Locale};`;
 
 fs.outputFile(path.resolve(__dirname, '../src/packages/nutui.vue.build.ts'), fileStrBuild, 'utf8', (error) => {
   // logger.success(`${package_config_path} 文件写入成功`);
@@ -38,8 +37,9 @@ fs.outputFile(path.resolve(__dirname, '../src/packages/nutui.vue.build.ts'), fil
 let fileStrDev = `${importStr}
 ${installFunction}
 ${importScssStr}
-export { install, ${packages.join(',')}  };
-export default { install, version:'${package.version}'};`;
+export const testComponents = { ${packages.join(',')}};
+export { install, Locale, ${packages.join(',')}  };
+export default { install, version:'${package.version}', Locale};`;
 fs.outputFile(path.resolve(__dirname, '../src/packages/nutui.vue.ts'), fileStrDev, 'utf8', (error) => {
   // logger.success(`${package_config_path} 文件写入成功`);
 });

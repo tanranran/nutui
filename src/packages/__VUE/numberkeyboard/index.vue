@@ -2,14 +2,17 @@
   <nut-popup
     v-model:visible="show"
     position="bottom"
+    :teleport="teleport"
+    :popClass="popClass"
     :overlay="overlay"
     @click-overlay="closeBoard()"
+    :teleportDisable="teleportDisable"
     overlay-class="nut-numberkeyboard-overlay"
   >
     <div class="nut-numberkeyboard" ref="root">
       <div class="number-board-header" v-if="title">
         <h3 class="tit">{{ title }}</h3>
-        <span class="keyboard-close" @click="closeBoard()">完成</span>
+        <span class="keyboard-close" v-if="type == 'default'" @click="closeBoard()">{{ translate('done') }}</span>
       </div>
       <div class="number-board-body">
         <div class="number-board">
@@ -32,8 +35,8 @@
                 { delete: item.type == 'delete' }
               ]"
               @touchstart="(event) => onTouchstart(item, event)"
-              @touchmove="(event) => onTouchMove(item, event)"
-              @touchend="onTouchEnd"
+              @touchmove="(event) => onTouchMove(event)"
+              @touchend="(event) => onTouchEnd(event)"
             >
               <template v-if="item.type == 'number' || item.type == 'custom'">{{ item.id }}</template>
               <img
@@ -52,7 +55,7 @@
             <div
               :class="['key', { active: clickKeyIndex == 'delete' }]"
               @touchstart="(event) => onTouchstart({ id: 'delete', type: 'delete' }, event)"
-              @touchmove="(event) => onTouchMove({ id: 'delete', type: 'delete' }, event)"
+              @touchmove="(event) => onTouchMove(event)"
               @touchend="onTouchEnd"
             >
               <img
@@ -60,8 +63,10 @@
               />
             </div>
           </div>
-          <div class="key-board-wrapper" @click="closeBoard()" v-if="title == ''">
-            <div :class="['key', 'finish', { activeFinsh: clickKeyIndex == 'finish' }]"> 完成 </div>
+          <div class="key-board-wrapper key-board-finish" @click="closeBoard()">
+            <div :class="['key', 'finish', { activeFinsh: clickKeyIndex == 'finish' }]">
+              {{ confirmText || translate('done') }}
+            </div>
           </div>
         </div>
       </div>
@@ -71,10 +76,18 @@
 
 <script lang="ts">
 import { computed, onMounted, provide, reactive, nextTick, ref, watch, Ref } from 'vue';
-import { createComponent } from '../../utils/create';
-const { create } = createComponent('numberkeyboard');
+import { createComponent } from '@/packages/utils/create';
+const { create, translate } = createComponent('numberkeyboard');
+export interface keys {
+  id: number | string;
+  type: string;
+}
 export default create({
   props: {
+    confirmText: {
+      type: String,
+      default: ''
+    },
     title: {
       type: String,
       default: ''
@@ -106,26 +119,43 @@ export default create({
     overlay: {
       type: Boolean,
       default: true
+    },
+    teleportDisable: {
+      type: Boolean,
+      default: true
+    },
+    teleport: {
+      type: [String, Element],
+      default: 'body'
+    },
+    popClass: {
+      type: String,
+      default: ''
     }
   },
   emits: ['input', 'delete', 'close', 'update:value'],
   setup(props, { emit }) {
-    console.log(props.overlay);
-
-    const clickKeyIndex = ref(undefined);
+    const clickKeyIndex: Ref<string | undefined | number> = ref(undefined);
     const show = ref(props.visible);
     const root = ref<HTMLElement>();
     function defaultKey() {
-      return [
-        ...getBasicKeys(),
-        { id: 'lock', type: 'lock' },
-        { id: 0, type: 'number' },
-        { id: 'delete', type: 'delete' }
-      ];
+      const { customKey } = props;
+      let object = {
+        id: 'lock',
+        type: 'lock'
+      };
+      let customKeys = Array.isArray(customKey) ? customKey : [customKey];
+      if (customKeys.length === 1) {
+        object = {
+          id: customKeys[0],
+          type: 'custom'
+        };
+      }
+      return [...getBasicKeys(), object, { id: 0, type: 'number' }, { id: 'delete', type: 'delete' }];
     }
 
     function getBasicKeys() {
-      const keys: any = [];
+      const keys: keys[] = [];
       for (let i = 1; i <= 9; i++) {
         keys.push({ id: i, type: 'number' });
       }
@@ -143,8 +173,11 @@ export default create({
       if (customKeys.length > 2) {
         customKeys = [customKeys[0], customKeys[1]];
       }
+      if (customKeys.length == 2 && props.title && props.type != 'rightColumn') {
+        customKeys = [customKeys[0]];
+      }
       if (customKeys.length === 1) {
-        if (props.title) {
+        if (props.title && props.type != 'rightColumn') {
           keys.push({ id: customKeys[0], type: 'custom' }, { id: 0, type: 'number' }, { id: 'delete', type: 'delete' });
         } else {
           keys.push({ id: 0, type: 'number' }, { id: customKeys[0], type: 'custom' });
@@ -155,11 +188,6 @@ export default create({
           { id: 0, type: 'number' },
           { id: customKeys[1], type: 'custom' }
         );
-        if (props.title) {
-          keys.push({ id: 'delete', type: 'delete' });
-        }
-      } else {
-        keys.push({ id: 0, type: 'number' });
       }
       return keys;
     }
@@ -176,7 +204,7 @@ export default create({
       }
     );
 
-    function onTouchstart(item: any, event: any) {
+    function onTouchstart(item: { id: string | number; type: string }, event: TouchEvent) {
       event.stopPropagation();
       clickKeyIndex.value = item.id;
       if (item.type == 'number' || item.type == 'custom') {
@@ -193,10 +221,11 @@ export default create({
         emit('update:value', props.value.slice(0, props.value.length - 1));
       }
     }
-    function onTouchMove(id: any, event: any) {
+    function onTouchMove(event: TouchEvent) {
       event.stopPropagation();
     }
-    function onTouchEnd() {
+    function onTouchEnd(event: TouchEvent) {
+      event.preventDefault();
       clickKeyIndex.value = undefined;
     }
 
@@ -204,7 +233,6 @@ export default create({
       emit('close');
     }
 
-    onMounted(() => {});
     return {
       clickKeyIndex,
       defaultKey,
@@ -216,7 +244,8 @@ export default create({
       genCustomKeys,
       getBasicKeys,
       root,
-      show
+      show,
+      translate
     };
   }
 });

@@ -1,3 +1,11 @@
+.nut-theme-dark {
+  .nut-card {
+    .nut-card__right {
+      color: $dark-color;
+    }
+  }
+}
+
 .nut-card {
   width: 100%;
   display: flex;
@@ -6,6 +14,8 @@
     width: 120px;
     height: 120px;
     flex-shrink: 0;
+    background-color: $card-left-background-color;
+    border-radius: $card-left-border-radius;
 
     > img {
       display: block;
@@ -85,12 +95,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 4px;
 
       .nut-card__right__shop__name {
         line-height: 1.5;
         color: #999;
         font-size: 12px;
-        padding-top: 4px;
       }
     }
   }

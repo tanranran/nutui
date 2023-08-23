@@ -5,12 +5,17 @@
         <view
           class="nut-menu__item"
           @click="!item.disabled && toggleItem(index)"
-          :class="{ disabled: item.disabled }"
+          :class="{ disabled: item.disabled, active: item.state.showPopup }"
           :style="{ color: item.state.showPopup ? activeColor : '' }"
         >
-          <view class="nut-menu__title" :class="{ active: item.state.showPopup }">
+          <view class="nut-menu__title" :class="getClasses(item.state.showPopup)">
             <view class="nut-menu__title-text">{{ item.renderTitle() }}</view>
-            <nut-icon :name="item.titleIcon" size="10" class="nut-menu__title-icon"></nut-icon>
+            <nut-icon
+              v-bind="$attrs"
+              :name="titleIcon || (direction === 'up' ? 'arrow-up' : 'down-arrow')"
+              size="10"
+              class="nut-menu__title-icon"
+            ></nut-icon>
           </view>
         </view>
       </template>
@@ -19,28 +24,48 @@
   </view>
 </template>
 <script lang="ts">
-import { reactive, provide, computed, ref, Ref, unref } from 'vue';
-import { createComponent } from '../../utils/create';
-import { useRect } from '../../utils/useRect';
+import { reactive, provide, computed, ref, onMounted, onUnmounted } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+import { useRect } from '@/packages/utils/useRect';
 const { componentName, create } = createComponent('menu');
 export default create({
   props: {
     activeColor: {
       type: String,
-      default: '#FA2C19'
+      default: ''
     },
     overlay: {
+      type: Boolean,
+      default: true as const
+    },
+    lockScroll: {
       type: Boolean,
       default: true as const
     },
     duration: {
       type: [Number, String],
       default: 0
-    }
+    },
+    titleIcon: String,
+
+    closeOnClickOverlay: {
+      type: Boolean,
+      default: true
+    },
+    direction: {
+      type: String,
+      default: 'down'
+    },
+    scrollFixed: {
+      type: [Boolean, String, Number],
+      default: false
+    },
+    titleClass: [String]
   },
   setup(props, { emit, slots }) {
     const barRef = ref<HTMLElement>();
     const offset = ref(0);
+    const isScrollFixed = ref(false);
 
     const useChildren = () => {
       const publicChildren: any[] = reactive([]);
@@ -54,10 +79,25 @@ export default create({
           }
         };
 
+        const removeLink = (child: any) => {
+          if (child.proxy) {
+            let internalIndex = internalChildren.indexOf(child);
+            if (internalIndex > -1) {
+              internalChildren.splice(internalIndex, 1);
+            }
+
+            let publicIndex = publicChildren.indexOf(child.proxy);
+            if (internalIndex > -1) {
+              publicChildren.splice(publicIndex, 1);
+            }
+          }
+        };
+
         provide(
           'menuParent',
           Object.assign(
             {
+              removeLink,
               link,
               children: publicChildren,
               internalChildren
@@ -80,14 +120,20 @@ export default create({
     const classes = computed(() => {
       const prefixCls = componentName;
       return {
-        [prefixCls]: true
+        [prefixCls]: true,
+        'scroll-fixed': isScrollFixed.value
       };
     });
 
     const updateOffset = () => {
       if (barRef.value) {
         const rect = useRect(barRef);
-        offset.value = rect.bottom;
+
+        if (props.direction === 'down') {
+          offset.value = rect.bottom;
+        } else {
+          offset.value = window.innerHeight - rect.top;
+        }
       }
     };
 
@@ -104,12 +150,56 @@ export default create({
       });
     };
 
+    const getScrollTop = (el: Element | Window) => {
+      return Math.max(0, 'scrollTop' in el ? el.scrollTop : el.pageYOffset);
+    };
+
+    const onScroll = () => {
+      const { scrollFixed } = props;
+
+      const scrollTop = getScrollTop(window);
+
+      isScrollFixed.value = scrollTop > (typeof scrollFixed === 'boolean' ? 30 : Number(scrollFixed));
+    };
+
+    const getClasses = (showPopup: boolean) => {
+      let str = '';
+      const { titleClass } = props;
+
+      if (showPopup) {
+        str += 'active';
+      }
+
+      if (titleClass) {
+        str += ` ${titleClass}`;
+      }
+
+      return str;
+    };
+
+    onMounted(() => {
+      const { scrollFixed } = props;
+
+      if (scrollFixed) {
+        window.addEventListener('scroll', onScroll);
+      }
+    });
+
+    onUnmounted(() => {
+      const { scrollFixed } = props;
+
+      if (scrollFixed) {
+        window.removeEventListener('scroll', onScroll);
+      }
+    });
+
     return {
       toggleItem,
       children,
       opened,
       classes,
-      barRef
+      barRef,
+      getClasses
     };
   }
 });

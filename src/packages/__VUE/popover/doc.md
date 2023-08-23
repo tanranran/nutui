@@ -10,206 +10,382 @@
 
 import { createApp } from 'vue';
 // vue
-import { Popover } from '@nutui/nutui';
+import { Popover, Popup } from '@nutui/nutui';
 // taro
-import { Popover } from '@nutui/nutui-taro';
+import { Popover, Popup } from '@nutui/nutui-taro';
 
 const app = createApp();
+
+app.use(Popup);
 app.use(Popover);
 
 ```
 
-### 代码实例
 
-### 基本用法
+### 基础用法
 
 Popover 支持明朗和暗黑两种风格，默认为明朗风格，将 theme 属性设置为 dark 可切换为暗黑风格。
 
+:::demo
 ```html
-  <nut-popover
-      :visible="visible"
-      :list="List"
-      @open="open"
-      @close="close"
-    >
-      <template #reference>
-        <nut-button type="primary" shape="square">明朗风格</nut-button>
-      </template>
-    </nut-popover>
+<template>
+  <nut-popover v-model:visible="visible.lightTheme" :list="iconItemList">
+    <template #reference>
+      <nut-button type="primary" shape="square">明朗风格</nut-button>
+    </template>
+  </nut-popover>
 
-  <nut-popover
-      :visible="visible"
-      theme="dark"
-      :list="List"
-      @open="open"
-      @close="close"
-    >
-      <template #reference>
-        <nut-button type="primary" shape="square">暗黑风格</nut-button>
-      </template>
-    </nut-popover>
-```
-
-```javascript
-
-  setup(){
-  const visible = ref(false);
-  const List =  [
-    {name: '选项一'},
-    {name: '选项二'},
-    {name: '选项三'}];
-  }
-
-  const open = () =>{
-      visible.value = true;
-  }
-  const close = () =>{
-      visible.value = false;
-  }
+  <nut-popover v-model:visible="visible.darkTheme" theme="dark" :list="iconItemList">
+    <template #reference>
+      <nut-button type="primary" shape="square">暗黑风格</nut-button>
+    </template>
+  </nut-popover>
+</template>
+<script>
+import { reactive, ref } from 'vue';
+export default {
+  setup() {
+    const visible = ref({
+      darkTheme: false,
+      lightTheme: false,
+    });
+    const iconItemList = reactive([
+      { name: '选项一' },
+      { name: '选项二' },
+      { name: '选项三' }
+    ]);
+    return {
+        visible,
+        iconItemList,
+      };
+    }
+}
+</script>
 
 ```
+:::
 
 ### 选项配置
 
-```html
-  <nut-popover
-      :visible="visible"
-      theme="dark"
-      :list="List"
-      @open="open"
-      @close="close"
-    >
-      <template #reference>
-        <nut-button type="primary" shape="square">展示图标</nut-button>
-      </template>
-    </nut-popover>
-
-```
-
-
-```javascript
-
-  setup(){
-    const visible = ref(false);
-    const List = [
-      {name: '选项一',icon: 'my2'},
-      {name: '选项二',icon: 'cart2'},
-      {name: '选项三',icon: 'location2'}
-    ],
-
-    const open = () =>{
-      visible.value =   true;
-    }
-    const close = () =>{
-      visible.value =  false;
-    }
-  }
-
-
-```
-
-
 在 list 数组中，可以通过 disabled 字段来禁用某个选项。
 
+:::demo
 ```html
-  <nut-popover
-      :visible="visible"
-      :list="List"
-      @open="open"
-      @close="close"
-    >
-      <template #reference>
-        <nut-button type="primary" shape="square">禁用选项</nut-button>
-      </template>
-    </nut-popover>
-```
+<template>
+  <nut-popover v-model:visible="visible.showIcon" theme="dark" :list="itemList">
+    <template #reference>
+      <nut-button type="primary" shape="square">展示图标</nut-button>
+    </template>
+  </nut-popover>
 
+  <nut-popover v-model:visible="visible.disableAction" :list="itemListDisabled">
+    <template #reference>
+      <nut-button type="primary" shape="square">禁用选项</nut-button>
+    </template>
+  </nut-popover>
+</template>
 
-```javascript
+<script>
+import { reactive, ref } from 'vue';
+export default {
+  setup() {
+    const visible = ref({
+      showIcon: false,
+      disableAction: false,
+    });
 
+    const itemList = reactive([
+      {
+        name: '选项一',
+        icon: 'my2'
+      },{
+        name: '选项二',
+        icon: 'cart2'
+      },{
+        name: '选项三',
+        icon: 'location2'
+      }
+    ]);
 
-  setup(){
-    const visible = ref(false);
-    const List = [{
-              name: '选项一',
-              disabled: true
-            },
-            {
-              name: '选项二',
-              disabled: true
-            },
-            {
-              name: '选项三'
-            }],
+    const itemListDisabled = reactive([
+      {
+        name: '选项一',
+        disabled: true
+      },{
+        name: '选项二',
+        disabled: true
+      },{
+        name: '选项三'
+      }
+    ]);
 
-    const open = () =>{
-      visible.value =   true;
+    return {
+        itemList,
+        visible,
+        itemListDisabled,
+      };
     }
-    const close = () =>{
-      visible.value =  false;
-    }
-  }
+}
+</script>
+
 
 ```
+:::
+
 
 ### 自定义内容
 
 在名为 content 插槽中自定义内容。
 
+:::demo
 ```html
-  <nut-popover 
-      :visible="visible"
-      @open="open"
-      @close="close">
-      <template #reference>
-        <nut-button type="primary" shape="square">自定义内容</nut-button>
-      </template>
+<template>
+  <nut-popover v-model:visible="visible.Customized">
+    <template #reference>
+      <nut-button type="primary" shape="square">自定义内容</nut-button>
+    </template>
 
-      <template #content>
-        <div class="self-content">
-          <div
-                      class="self-content-item"
-                      v-for="(item, index) in selfContent"
-                      :key="index"
-                    >
-            <nut-icon :name="item.name" size="15"></nut-icon>
-            <div class="self-content-desc">{{ item.desc }}</div>
-          </div>
+    <template #content>
+      <div class="self-content">
+        <div class="self-content-item" v-for="(item, index) in selfContent" :key="index">
+          <nut-icon :name="item.name" size="15"></nut-icon>
+        <div class="self-content-desc">{{ item.desc }}</div>
         </div>
-      </template>
-    </nut-popover>
+      </div>
+    </template>
+  </nut-popover>
+</template>
+
+
+<script>
+import { reactive, ref } from 'vue';
+export default {
+  setup() {
+    const visible = ref({
+      Customized: false,
+    });
+    const selfContent = reactive([
+      {
+        name: 'service',
+        desc: '选项一'
+      },
+      {
+        name: 'notice',
+        desc: '选项二'
+      },
+      {
+        name: 'location',
+        desc: '选项三'
+      },
+      {
+        name: 'category',
+        desc: '选项四'
+      },
+      {
+        name: 'scan2',
+        desc: '选项五'
+      },
+      {
+        name: 'message',
+        desc: '选项六'
+      }
+    ]);
+
+    return {
+      visible,
+      selfContent,
+    };
+  }
+}
+</script>
+
+<style lang="scss">
+.self-content {
+  width: 195px;
+  display: flex;
+  flex-wrap: wrap;
+  &-item {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  &-desc {
+    margin-top: 5px;
+    width: 60px;
+    font-size: 10px;
+    text-align: center;
+  }
+}
+</style>
+
+
 ```
+:::
 
 ### 位置自定义
 
-支持 bottom, top, left, right 四种弹出位置，默认值为 bottom。
-
-```html
-  <nut-popover
-      :visible="visible"
-      location="top"
-      theme="dark"
-      :list="List"
-      @open="open"
-      @close="close"
-    >
-      <template #reference>
-        <nut-button type="primary" shape="square">向上弹出</nut-button>
-      </template>
-  </nut-popover>
-
+通过 location 属性来控制气泡的弹出位置。可选值
+```
+top           # 顶部中间位置
+left          # 左侧中间位置
+right         # 右侧中间位置
+bottom        # 底部中间位置
+```
+自 `v3.1.21` 起新增
+```
+top-start     # 顶部左侧位置
+top-end       # 顶部右侧位置 
+left-start    # 左侧上方位置
+left-end      # 左侧下方位置
+right-start   # 右侧上方位置
+right-end     # 右侧下方位置
+bottom-start  # 底部左侧位置
+bottom-end    # 底部右侧位置
 ```
 
 
+:::demo
+```html
+<template>
+  <nut-popover v-model:visible="visible" location="top" theme="dark" :list="iconItemList">
+    <template #reference>
+      <div class="brick"></div>
+    </template>
+  </nut-popover>
+</template>
 
-### Prop  
+<script lang="ts">
+import { reactive, ref } from 'vue';
+export default {
+  setup() {
+    const visible = ref(false);
+
+    const iconItemList = reactive([
+        {
+          name: '选项一'
+        },
+        {
+          name: '选项二'
+        }]);
+
+      return {
+        iconItemList,
+        visible,
+      };
+    }
+};
+</script>
+
+```
+:::
+
+### 自定义目标元素
+
+Popover 提供了 `targetId` 属性，用于匹配目标元素，在目标元素上添加对应的 id 值即可
+
+:::demo
+```html
+<template>
+  <nut-button type="primary" shape="square" id="popid" @click="clickCustomHandle">自定义目标元素</nut-button>
+    <nut-popover v-model:visible="customTarget" targetId="popid" :list="itemList" location="top-start"></nut-popover>
+</template>
+
+<script>
+import { reactive, ref } from 'vue';
+export default {
+  setup() {
+    const visible = ref({
+      customTarget:false
+    });
+
+    const itemList = reactive([
+      {name: 'option1'},
+      {name: 'option2'},
+      {name: 'option3'}
+    ]);
+
+    const clickCustomHandle = () => {
+      visible.customTarget = !visible.customTarget;
+    };
+
+    return {
+        itemList,
+        visible,
+        clickCustomHandle,
+      };
+    }
+}
+</script>
+
+
+```
+:::
+
+### 自定义颜色
+
+Popopver 提供了 2 种主题色，同样可以通过 `bgColor` 属性改变背景色
+
+:::demo
+```html
+<template>
+  <nut-popover v-model:visible="customColor" :list="itemList" location="right-start" bgColor="#f00" theme="dark">
+      <template #reference>
+        <nut-button type="primary" shape="square" >自定义颜色</nut-button>
+      </template>
+    </nut-popover>
+</template>
+
+<script>
+import { reactive, ref } from 'vue';
+export default {
+  setup() {
+    const visible = ref({
+      customColor:false
+    });
+
+    const itemList = reactive([
+      {name: 'option1'},
+      {name: 'option2'},
+      {name: 'option3'}
+    ]);
+
+    return {
+        itemList,
+        visible
+      };
+    }
+}
+</script>
+
+```
+:::
+
+## API
+### Props  
 
 | 字段            | 说明                            | 类型     | 默认值      |
 |----------------|---------------------------------|---------|------------|
 | list          | 选项列表                          | List[]   | []        |
 | visible      | 是否展示气泡弹出层                 | boolean  | false     |
 | theme          | 主题风格，可选值为 dark            | string   | `light`   |
-| location       | 弹出位置，可选值为 top,left,right  | string   | `bottom`  |
+| location       | 弹出位置  | string   | `bottom`  |
+| offset `v3.1.21`       | 出现位置的偏移量  | [number, number]   | [0, 12]  |
+| show-arrow `v3.1.21`       | 是否显示小箭头  | boolean  | true  |
+| custom-class `v3.1.21`       | 自定义 class 值  | string  | ''  |
+| duration `v3.1.21`       | 动画时长  |  [number, number]  | 0.3  |
+| iconPrefix `v3.1.21`       | 图标自定义类值,等同于 Icon 组件的[ class-prefix 属性](https://nutui.jd.com/#/zh-CN/component/icon)  | string  | 'nut-icon''  |
+| overlay `v3.2.8`       | 是否显示遮罩层  | Boolean  | false  |
+| overlay-class `v3.2.8`       | 自定义遮罩层类名 | string  | ''  |
+| overlay-style `v3.2.8`       | 自定义遮罩层样式  | string  | ''  |
+| close-on-click-overlay `v3.2.8`       | 是否在点击遮罩层后关闭菜单  | boolean  | true  |
+| close-on-click-action `v3.2.8`       | 是否在点击选项后关闭  | boolean  | true |
+| close-on-click-outside `v3.2.8`       | 是否在点击外部元素后关闭菜单 | boolean  | true  |
+| bg-color `v3.3.1`       | 自定义背景色 | String  | -  |
+| target-id `v3.3.1`       | 自定义目标元素 id | String  | -  |
+| arrow-offset `v3.3.1`       | 小箭头的偏移量 | Number  | 0  |
 
 ### List 数据结构  
 
@@ -220,6 +396,7 @@ List 属性是一个由对象构成的数组，数组中的每个对象配置一
 | name           | 选项文字               | string   | -      |
 | icon           | nut-icon 图标名称      | string   | -      |
 | disabled       | 是否为禁用状态          | boolean  | false  | 
+| className `v3.1.21`      | 为对应选项添加额外的类名          | string/Array/object  | -  | 
 
 
 ### Slots

@@ -1,10 +1,10 @@
 <template>
-  <view :class="classes">
+  <view :class="classes" @click="handleClickStep">
     <view class="nut-step-head">
       <view class="nut-step-line"></view>
       <view class="nut-step-icon" :class="[!dot ? (icon ? 'is-icon' : 'is-text') : '']">
         <template v-if="icon">
-          <nut-icon class="nut-step-icon-inner" :color="iconColor" :name="icon" :size="size" />
+          <nut-icon class="nut-step-icon-inner" v-bind="$attrs" :color="iconColor" :name="icon" :size="size" />
         </template>
         <template v-else-if="dot"></template>
         <template v-else>
@@ -14,16 +14,20 @@
     </view>
     <view class="nut-step-main">
       <view class="nut-step-title">
-        {{ title }}
+        <span v-if="!$slots.title">{{ title }}</span>
+        <slot name="title"></slot>
       </view>
-      <view class="nut-step-content" v-html="content" v-if="content"> </view>
+      <view class="nut-step-content" v-if="content || $slots.content">
+        <span v-if="!$slots.content" v-html="content"></span>
+        <slot name="content"></slot>
+      </view>
     </view>
   </view>
 </template>
 
 <script lang="ts">
 import { reactive, computed, inject, toRefs, getCurrentInstance, ComponentInternalInstance } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { create, componentName } = createComponent('step');
 
 export default create({
@@ -49,6 +53,7 @@ export default create({
       default: '12px'
     }
   },
+  emits: ['click-step'],
 
   setup(props, { emit, slots }) {
     const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -79,10 +84,15 @@ export default create({
       };
     });
 
+    const handleClickStep = () => {
+      parent['onEmit'](index.value);
+    };
+
     return {
       ...toRefs(state),
       index,
-      classes
+      classes,
+      handleClickStep
     };
   }
 });

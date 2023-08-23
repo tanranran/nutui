@@ -9,6 +9,7 @@
             v-for="item in columns"
             :key="item.key"
             @click="handleSorterClick(item)"
+            :style="item.stylehead"
           >
             {{ item.title }}
             <slot name="icon"></slot>
@@ -21,30 +22,37 @@
           <span
             class="nut-table__main__body__tr__td"
             :class="cellClasses(getColumnItem(value))"
-            v-for="value in Object.keys(item)"
+            v-for="[value, render] in sortDataItem()"
             :key="value"
+            :style="getColumnItemStyle(value)"
           >
-            {{ typeof item[value] !== 'function' ? item[value] : '' }}
-            <RenderColumn :slots="item[value]" v-if="typeof item[value] === 'function'"></RenderColumn>
+            <RenderColumn
+              :slots="[render, item[value]]"
+              :record="item"
+              v-if="typeof item[value] === 'function' || typeof render === 'function'"
+            ></RenderColumn>
+            <view v-else>
+              {{ item[value] }}
+            </view>
           </span>
         </view>
       </view>
     </view>
-    <view class="nut-table__summary" v-if="summary">
-      <span class="nut-table__summary__text" v-html="summary().value"></span>
-    </view>
     <view class="nut-table__nodata" v-if="!curData.length">
       <div class="nut-table__nodata" :class="{ 'nut-table__nodata--border': bordered }">
         <slot name="nodata"></slot>
-        <div v-if="!$slots.nodata" class="nut-table__nodata__text"> 暂无数据 </div>
+        <div v-if="!$slots.nodata" class="nut-table__nodata__text"> {{ translate('noData') }} </div>
       </div>
+    </view>
+    <view class="nut-table__summary" v-if="summary">
+      <span class="nut-table__summary__text" v-html="summary().value"></span>
     </view>
   </view>
 </template>
 
 <script lang="ts">
-import { createComponent } from '../../utils/create';
-const { componentName, create } = createComponent('table');
+import { createComponent } from '@/packages/utils/create';
+const { componentName, create, translate } = createComponent('table');
 import { component } from './common';
-export default create(component(componentName));
+export default create(component(componentName, translate));
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="demo full">
-    <h2>基础布局</h2>
+    <h2>{{ translate('basic') }}</h2>
     <div class="box-item">
       <nut-row>
         <nut-col :span="24">
@@ -41,7 +41,7 @@
         </nut-col>
       </nut-row>
     </div>
-    <h2>分栏间隔</h2>
+    <h2>{{ translate('desc') }}</h2>
     <div class="box-item">
       <nut-row :gutter="10">
         <nut-col :span="8">
@@ -55,7 +55,7 @@
         </nut-col>
       </nut-row>
     </div>
-    <h2>Flex布局</h2>
+    <h2>{{ translate('flex') }}</h2>
     <div class="box-item">
       <nut-row type="flex" wrap="nowrap">
         <nut-col :span="6">
@@ -112,26 +112,54 @@
           <div class="flex-content">span:6</div>
         </nut-col>
       </nut-row>
+      <nut-row type="flex" justify="space-evenly">
+        <nut-col :span="6">
+          <div class="flex-content">span:6</div>
+        </nut-col>
+        <nut-col :span="6">
+          <div class="flex-content flex-content-light">span:6</div>
+        </nut-col>
+        <nut-col :span="6">
+          <div class="flex-content">span:6</div>
+        </nut-col>
+      </nut-row>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { createComponent } from '../../utils/create';
-const { createDemo } = createComponent('layout');
+import { createComponent } from '@/packages/utils/create';
+const { createDemo, translate } = createComponent('layout');
 import Row from '../row/index.vue';
 import Col from '../col/index.vue';
+import { useTranslate } from '@/sites/assets/util/useTranslate';
+const initTranslate = () =>
+  useTranslate({
+    'zh-CN': {
+      basic: '基本用法',
+      desc: '分栏间隔',
+      flex: 'Flex布局'
+    },
+    'en-US': {
+      basic: 'Basic Usage',
+      desc: 'Column spacing',
+      flex: 'Flex layout'
+    }
+  });
 export default createDemo({
   components: {
     [Row.name]: Row,
     [Col.name]: Col
+  },
+  setup() {
+    initTranslate();
+    return { translate };
   }
 });
 </script>
 
 <style lang="scss" scoped>
 .box-item {
-  background: #fff;
   margin-bottom: 20px;
   padding: 20px 0;
 }

@@ -1,20 +1,52 @@
+.nut-theme-dark {
+  .nut-searchbar {
+    background: $dark-background;
+    &__search-label {
+      color: $dark-color;
+    }
+    .nut-searchbar__input-clear {
+      & .nut-searchbar__nut-icon-mask-close {
+        color: $dark-color;
+        &:hover {
+          cursor: pointer;
+          color: $dark-color;
+        }
+      }
+    }
+    &__right-search-icon,
+    &__left-search-icon {
+      color: $dark-color;
+    }
+  }
+}
 .nut-searchbar {
   display: flex;
   align-items: center;
-  width: 100%;
-  padding: 9px 16px;
+  width: $searchbar-width;
+  padding: $searchbar-padding;
   background: $searchbar-background;
   box-sizing: border-box;
+  color: $searchbar-input-bar-color;
+
+  &::placeholder {
+    color: $searchbar-input-bar-placeholder-color;
+  }
+
+  &__search-label {
+    padding: 0 5px;
+    color: #323233;
+  }
   &__search-input {
     display: flex;
     align-items: center;
-    width: 100%;
-    height: 32px;
+    width: $searchbar-input-width;
+    height: $searchbar-input-height;
     flex: 1;
-    padding: 0 0 0 13px;
-    border-radius: 16px;
-    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.04);
+    padding: $searchbar-input-padding;
+    border-radius: $searchbar-input-border-radius;
+    box-shadow: $searchbar-input-box-shadow;
     background: $searchbar-input-background;
+    box-sizing: border-box;
 
     .nut-searchbar__input-inner {
       display: flex;

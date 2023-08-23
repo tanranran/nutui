@@ -1,29 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Cascader change tab 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"true\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">鼓楼区</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">鼓楼区</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -59,36 +57,34 @@ exports[`Cascader change tab 1`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader change tab 2`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"true\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">鼓楼区</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">鼓楼区</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-100%, 0, 0); transition-duration: 300ms;\\">
@@ -124,40 +120,38 @@ exports[`Cascader change tab 2`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader change tab 3`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"true\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">鼓楼区</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">鼓楼区</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item\\" aria-checked=\\"false\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -170,14 +164,14 @@ exports[`Cascader change tab 3`] = `
               </view>
             </view>
           </view>
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item active\\" aria-checked=\\"true\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">福州</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
             </view>
           </view>
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item active\\" aria-checked=\\"true\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">鼓楼区</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -189,24 +183,22 @@ exports[`Cascader change tab 3`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader modelValue 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\"></view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -221,48 +213,46 @@ exports[`Cascader modelValue 1`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader modelValue 2`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">鼓楼区</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">鼓楼区</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
           <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
-              <view class=\\"nut-cascader-item\\" aria-checked=\\"false\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\" aria-checked=\\"false\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
-              <view class=\\"nut-cascader-item disabled\\" aria-checked=\\"false\\" aria-disabled=\\"true\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item disabled\\" aria-disabled=\\"true\\" role=\\"menuitemradio\\" aria-checked=\\"false\\">
                 <view class=\\"nut-cascader-item__title\\">湖南</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
-              <view class=\\"nut-cascader-item active\\" aria-checked=\\"true\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item active\\" role=\\"menuitemradio\\" aria-checked=\\"true\\">
                 <view class=\\"nut-cascader-item__title\\">福建</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
             </view>
@@ -286,68 +276,64 @@ exports[`Cascader modelValue 2`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader modelValue 3`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">湖南</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">湖南</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
-              <view class=\\"nut-cascader-item\\" aria-checked=\\"false\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\" aria-checked=\\"false\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
-              <view class=\\"nut-cascader-item active disabled\\" aria-checked=\\"true\\" aria-disabled=\\"true\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item active disabled\\" aria-disabled=\\"true\\" role=\\"menuitemradio\\" aria-checked=\\"true\\">
                 <view class=\\"nut-cascader-item__title\\">湖南</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
-              <view class=\\"nut-cascader-item\\" aria-checked=\\"false\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\" aria-checked=\\"false\\">
                 <view class=\\"nut-cascader-item__title\\">福建</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
             </view>
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader modelValue 4`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -362,64 +348,60 @@ exports[`Cascader modelValue 4`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader modelValue with lazy 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">Loading...</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">Loading...</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view class=\\"nut-cascader-pane\\"></view>
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader modelValue with lazy 2`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A0</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A0</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A12</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A12</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A21</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A21</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -458,36 +440,34 @@ exports[`Cascader modelValue with lazy 2`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader options 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">鼓楼区</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">鼓楼区</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -523,31 +503,29 @@ exports[`Cascader options 1`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader options with convertConfig 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">广东省</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">广东省</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">广州市</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">广州市</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-100%, 0, 0); transition-duration: 300ms;\\">
@@ -570,36 +548,34 @@ exports[`Cascader options with convertConfig 1`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader options with valueKey/textKey/childrenKey 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">鼓楼区</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">鼓楼区</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -635,74 +611,82 @@ exports[`Cascader options with valueKey/textKey/childrenKey 1`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
+          <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
+            <view class=\\"nut-tabs__titles-item__line\\"></view>
+            <!--v-if-->
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
+          </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
-        <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+        <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-100%, 0, 0); transition-duration: 300ms;\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
-              <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\" aria-checked=\\"false\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
-              <view class=\\"nut-cascader-item disabled\\" aria-disabled=\\"true\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item disabled\\" aria-disabled=\\"true\\" role=\\"menuitemradio\\" aria-checked=\\"false\\">
                 <view class=\\"nut-cascader-item__title\\">湖南</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
-              <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
+              <view class=\\"nut-cascader-item active\\" role=\\"menuitemradio\\" aria-checked=\\"true\\">
                 <view class=\\"nut-cascader-item__title\\">福建</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
+              </view>
+            </view>
+          </view>
+          <view class=\\"nut-tabpane\\">
+            <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
+              <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
+                <view class=\\"nut-cascader-item__title\\">福州</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
               </view>
             </view>
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select 2`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -738,36 +722,34 @@ exports[`Cascader select 2`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select 3`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福建</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福建</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">福州</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">福州</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">鼓楼区</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">鼓楼区</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -803,30 +785,28 @@ exports[`Cascader select 3`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select 4`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -841,52 +821,48 @@ exports[`Cascader select 4`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select with lazy 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\"></view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view class=\\"nut-cascader-pane\\"></view>
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select with lazy 2`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">A0</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -898,31 +874,29 @@ exports[`Cascader select with lazy 2`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select with lazy 3`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A0</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A0</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-100%, 0, 0); transition-duration: 300ms;\\">
@@ -948,36 +922,34 @@ exports[`Cascader select with lazy 3`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select with lazy 4`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A0</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A0</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A12</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A12</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -1013,36 +985,34 @@ exports[`Cascader select with lazy 4`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select with lazy 5`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A0</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A0</view>
           </view>
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A12</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A12</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">A21</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">A21</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-200%, 0, 0); transition-duration: 300ms;\\">
@@ -1078,30 +1048,28 @@ exports[`Cascader select with lazy 5`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select with lazy 6`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">A0</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -1113,31 +1081,29 @@ exports[`Cascader select with lazy 6`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader select with lazy 7`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000; display: none;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s; display: none;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; transition-duration: 0.3s; display: none;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">B0</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">B0</view>
           </view>
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-100%, 0, 0); transition-duration: 300ms;\\">
@@ -1163,30 +1129,28 @@ exports[`Cascader select with lazy 7`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"
 `;
 
 exports[`Cascader visible 1`] = `
-"<teleport-stub>
-  <transition-stub class=\\"\\">
-    <view class=\\"nut-overlay\\" style=\\"animation-duration: 0.3s; z-index: 2000;\\"></view>
-  </transition-stub>
-  <transition-stub>
-    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2000; animation-duration: 0.3s;\\">
+"<teleport-stub to=\\"body\\" disabled=\\"true\\">
+  <nut-overlay visible=\\"false\\" close-on-click-overlay=\\"true\\" z-index=\\"2000\\" lock-scroll=\\"false\\" duration=\\"0.3\\"></nut-overlay>
+  <transition-stub name=\\"popup-slide-bottom\\" appear=\\"false\\" persisted=\\"true\\" css=\\"true\\">
+    <view class=\\"nut-popup round popup-bottom nut-cascader__popup\\" style=\\"z-index: 2001; transition-duration: 0.3s;\\">
       <!--v-if-->
-      <view class=\\"nut-tabs horizontal nut-cascader\\">
+      <view class=\\"nut-tabs horizontal nut-cascader\\" id=\\"container\\">
         <view class=\\"nut-tabs__titles line scrollable normal\\">
           <view class=\\"nut-tabs__titles-item active\\" style=\\"margin-left: 0px; margin-right: 0px;\\">
             <view class=\\"nut-tabs__titles-item__line\\"></view>
             <!--v-if-->
-            <view class=\\"nut-tabs__titles-item__text\\">请选择</view>
+            <view class=\\"nut-tabs__titles-item__text ellipsis\\">请选择</view>
           </view>
         </view>
         <view class=\\"nut-tabs__content\\" style=\\"transform: translate3d(-0%, 0, 0); transition-duration: 300ms;\\">
-          <view class=\\"nut-tabpane active\\">
+          <view class=\\"nut-tabpane\\">
             <view role=\\"menu\\" class=\\"nut-cascader-pane\\">
               <view class=\\"nut-cascader-item\\" role=\\"menuitemradio\\">
                 <view class=\\"nut-cascader-item__title\\">浙江</view><i class=\\"nutui-iconfont nut-icon nut-icon-checklist nut-cascader-item__icon-check\\" src=\\"\\"></i>
@@ -1201,7 +1165,7 @@ exports[`Cascader visible 1`] = `
           </view>
         </view>
       </view>
-      <view class=\\"nutui-popup__close-icon nutui-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
+      <view class=\\"nut-popup__close-icon nut-popup__close-icon--top-right\\"><i class=\\"nutui-iconfont nut-icon nut-icon-close\\" style=\\"font-size: 12px; width: 12px; height: 12px;\\" src=\\"\\"></i></view>
     </view>
   </transition-stub>
 </teleport-stub>"

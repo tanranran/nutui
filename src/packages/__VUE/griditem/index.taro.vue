@@ -6,7 +6,13 @@
       </template>
       <template v-else>
         <slot v-if="$slots.icon" name="icon"></slot>
-        <nut-icon v-else :name="iconProps.name" :size="iconProps.size" :color="iconProps.color"></nut-icon>
+        <nut-icon
+          v-else
+          :name="iconProps.name"
+          v-bind="$attrs"
+          :size="iconProps.size"
+          :color="iconProps.color"
+        ></nut-icon>
 
         <slot v-if="$slots.text" name="text"></slot>
         <view v-else class="nut-grid-item__text">{{ text }}</view>
@@ -17,9 +23,9 @@
 
 <script lang="ts">
 import { computed, CSSProperties } from 'vue';
-import { createComponent } from '../../utils/create';
-import { pxCheck } from '../../utils/pxCheck';
-import { useInject } from '../../utils/useRelation/useInject';
+import { createComponent } from '@/packages/utils/create';
+import { pxCheck } from '@/packages/utils/pxCheck';
+import { useInject } from '@/packages/utils/useRelation/useInject';
 import { GRID_KEY, GridProps } from '../grid/common';
 const { create, componentName } = createComponent('grid-item');
 

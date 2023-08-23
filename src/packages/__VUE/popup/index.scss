@@ -1,7 +1,17 @@
+.nut-theme-dark {
+  .nut-popup {
+    background: $dark-background2;
+    &__close-icon {
+      color: $dark-color;
+    }
+  }
+}
+
 .popup-slide {
   &-center-enter-active,
   &-center-leave-active {
-    transition: opacity 0.5s ease;
+    transition-property: opacity;
+    transition-timing-function: ease;
   }
 
   &-center-enter-from,
@@ -46,6 +56,10 @@
   &.round {
     border-radius: $popup-border-radius $popup-border-radius 0 0;
   }
+  &--safebottom {
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 .popup-right {
@@ -81,15 +95,7 @@
   max-height: 100%;
   overflow-y: auto;
   background-color: $white;
-  transition: transform 0.2s;
   -webkit-overflow-scrolling: touch;
-}
-
-.nut-overflow-hidden {
-  overflow: hidden !important;
-}
-
-.nutui-popup {
   &__close-icon {
     position: absolute !important;
     z-index: 1;

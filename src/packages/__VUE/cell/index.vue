@@ -1,42 +1,9 @@
-<template>
-  <view :class="classes" :style="baseStyle" @click="handleClick">
-    <slot>
-      <view
-        class="nut-cell__title"
-        :class="{ icon: icon || $slots.icon }"
-        v-if="title || subTitle || icon"
-      >
-        <slot v-if="$slots.icon" name="icon"></slot>
-        <nut-icon v-else-if="icon" class="icon" :name="icon"></nut-icon>
-        <template v-if="subTitle">
-          <view class="title">{{ title }}</view>
-          <view class="nut-cell__title-desc">{{ subTitle }}</view>
-        </template>
-        <template v-else>
-          {{ title }}
-        </template>
-      </view>
-      <view
-        v-if="desc"
-        class="nut-cell__value"
-        :style="{ 'text-align': descTextAlign }"
-        >{{ desc }}</view
-      >
-
-      <slot v-if="$slots.link" name="link"></slot>
-      <nut-icon
-        v-else-if="isLink || to"
-        class="nut-cell__link"
-        name="right"
-      ></nut-icon>
-    </slot>
-  </view>
-</template>
+<template src="./template.html"></template>
 
 <script lang="ts">
 import { computed } from 'vue';
-import { createComponent } from '../../utils/create';
-import { useRouter } from 'vue-router';
+import { createComponent } from '@/packages/utils/create';
+import { useRouter } from '@/packages/utils/useRoute';
 import { pxCheck } from '@/packages/utils/pxCheck';
 const { componentName, create } = createComponent('cell');
 export default create({
@@ -50,7 +17,10 @@ export default create({
     replace: { type: Boolean, default: false },
     roundRadius: { type: [String, Number], default: '' },
     url: { type: String, default: '' },
-    icon: { type: String, default: '' }
+    icon: { type: String, default: '' },
+    rightIcon: { type: String, default: 'right' },
+    center: { type: Boolean, default: false },
+    size: { type: String, default: '' } // large
   },
   emits: ['click'],
   setup(props, { emit }) {
@@ -58,7 +28,9 @@ export default create({
       const prefixCls = componentName;
       return {
         [prefixCls]: true,
-        [`${prefixCls}--clickable`]: props.isLink || props.to
+        [`${prefixCls}--clickable`]: props.isLink || props.to,
+        [`${prefixCls}--center`]: props.center,
+        [`${prefixCls}--large`]: props.size == 'large'
       };
     });
     const router = useRouter();
@@ -80,9 +52,7 @@ export default create({
         //    router.push(props.to)
         // }
       } else if (props.url) {
-        props.replace
-          ? location.replace(props.url)
-          : (location.href = props.url);
+        props.replace ? location.replace(props.url) : (location.href = props.url);
       }
     };
 

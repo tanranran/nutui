@@ -18,7 +18,7 @@
 </template>
 <script lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { createComponent } from '../../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('sku-select');
 
 export default create({
@@ -36,7 +36,6 @@ export default create({
     watch(
       () => props.sku,
       (value) => {
-        // console.log('发生变化');
         skuInfo.value = [].slice.call(value);
       },
       { deep: true }

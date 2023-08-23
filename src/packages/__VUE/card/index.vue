@@ -6,8 +6,11 @@
     <div class="nut-card__right">
       <div class="nut-card__right__title">{{ title }}</div>
       <slot name="prolist"></slot>
-      <div class="nut-card__right__price">
-        <nut-price :price="price"></nut-price>
+      <div class="nut-card__right__price" v-if="isNeedPrice">
+        <template v-if="isHaveSlot('price')">
+          <slot name="price"></slot>
+        </template>
+        <nut-price v-else :price="price"></nut-price>
         <template v-if="isHaveSlot('origin')">
           <slot name="origin"></slot>
         </template>
@@ -32,7 +35,7 @@
 
 <script lang="ts">
 import { computed, reactive } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { create } = createComponent('card');
 export default create({
   props: {
@@ -63,12 +66,14 @@ export default create({
     shopName: {
       type: String,
       default: ''
+    },
+    isNeedPrice: {
+      type: Boolean,
+      default: true
     }
   },
 
   setup(props, { emit, slots }) {
-    console.log(slots['origin']);
-
     const isHaveSlot = (slot: string) => {
       return slots[slot];
     };

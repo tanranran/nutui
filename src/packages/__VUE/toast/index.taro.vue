@@ -21,7 +21,7 @@
           }"
         >
           <view v-if="hasIcon" class="nut-toast-icon-wrapper">
-            <nut-icon size="20" color="#ffffff" :name="iconName"></nut-icon>
+            <nut-icon size="20" color="#ffffff" v-bind="$attrs" :name="iconName"></nut-icon>
           </view>
           <div v-if="title" class="nut-toast-title">
             {{ title }}
@@ -32,9 +32,9 @@
     </view>
   </Transition>
 </template>
-<script>
+<script lang="ts">
 import { computed, watch } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { create } = createComponent('toast');
 import Icon from '../icon/index.taro.vue';
 export default create({
@@ -76,7 +76,7 @@ export default create({
     },
     bgColor: {
       type: String,
-      default: 'rgba(0, 0, 0, .8)'
+      default: ''
     },
 
     onClose: Function,
@@ -87,7 +87,7 @@ export default create({
     },
     coverColor: {
       type: String,
-      default: 'rgba(0, 0, 0, 0)'
+      default: ''
     },
     title: {
       type: String,

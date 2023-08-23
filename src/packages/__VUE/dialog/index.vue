@@ -2,21 +2,26 @@
   <nut-popup
     :teleport="teleport"
     v-model:visible="showPopup"
-    :close-on-click-overlay="closeOnClickOverlay"
+    :close-on-click-overlay="false"
     :lock-scroll="lockScroll"
+    :pop-class="popClass"
+    :style="popStyle"
+    :overlay-class="overlayClass"
+    :overlay-style="overlayStyle"
     round
-    @click-overlay="closed"
+    @click-overlay="onClickOverlay"
     @click-close-icon="closed"
   >
     <view :class="classes">
-      <view v-if="title" class="nut-dialog__header">
+      <view v-if="$slots.header || title" class="nut-dialog__header">
         <slot v-if="$slots.header" name="header"></slot>
         <template v-else>{{ title }}</template>
       </view>
 
       <view class="nut-dialog__content" :style="{ textAlign }">
         <slot v-if="$slots.default" name="default"></slot>
-        <view v-else v-html="content"></view>
+        <view v-else-if="typeof content === 'string'" v-html="content"></view>
+        <component v-else :is="content" />
       </view>
 
       <view class="nut-dialog__footer" :class="{ [footerDirection]: footerDirection }" v-if="!noFooter">
@@ -30,18 +35,10 @@
             v-if="!noCancelBtn"
             @click="onCancel"
           >
-            {{ cancelText }}
+            {{ cancelText || translate('cancel') }}
           </nut-button>
-          <nut-button
-            v-if="!noOkBtn"
-            size="small"
-            type="primary"
-            class="nut-dialog__footer-ok"
-            :class="{ disabled: okBtnDisabled }"
-            :disabled="okBtnDisabled"
-            @click="onOk"
-          >
-            {{ okText }}
+          <nut-button v-if="!noOkBtn" size="small" type="primary" class="nut-dialog__footer-ok" @click="onOk">
+            {{ okText || translate('confirm') }}
           </nut-button>
         </template>
       </view>
@@ -49,29 +46,27 @@
   </nut-popup>
 </template>
 <script lang="ts">
-import { onMounted, computed, watch, ref } from 'vue';
-import { createComponent } from '../../utils/create';
-const { componentName, create } = createComponent('dialog');
-import Popup, { popupProps } from '../popup/index.vue';
-import Button from '../button/index.vue';
+import { onMounted, computed, watch, ref, PropType, VNode, CSSProperties } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+const { componentName, create, translate } = createComponent('dialog');
+import { funInterceptor, Interceptor } from '@/packages/utils/util';
+import { popupProps } from '../popup/props';
+
 export default create({
   inheritAttrs: false,
-  components: {
-    [Popup.name]: Popup,
-    [Button.name]: Button
-  },
+  components: {},
   props: {
     ...popupProps,
     closeOnClickOverlay: {
       type: Boolean,
-      default: false
+      default: true
     },
     title: {
       type: String,
       default: ''
     },
     content: {
-      type: String,
+      type: [String, Object] as PropType<string>,
       default: ''
     },
     noFooter: {
@@ -88,15 +83,11 @@ export default create({
     },
     cancelText: {
       type: String,
-      default: '取消'
+      default: ''
     },
     okText: {
       type: String,
-      default: '确定'
-    },
-    okBtnDisabled: {
-      type: Boolean,
-      default: false
+      default: ''
     },
     cancelAutoClose: {
       type: Boolean,
@@ -113,15 +104,23 @@ export default create({
     footerDirection: {
       type: String,
       default: 'horizontal' //vertical
-    }
+    },
+    customClass: {
+      type: String,
+      default: ''
+    },
+    popStyle: {
+      type: Object as PropType<CSSProperties>
+    },
+    beforeClose: Function as PropType<Interceptor>
   },
-  emits: ['update', 'update:visible', 'ok', 'cancel', 'open', 'opened', 'close', 'closed'],
+  emits: ['update', 'update:visible', 'ok', 'cancel', 'opened', 'closed'],
   setup(props, { emit }) {
     const showPopup = ref(props.visible);
     onMounted(() => {
       if (props.closeOnPopstate) {
         window.addEventListener('popstate', function () {
-          closed();
+          closed('page');
         });
       }
     });
@@ -130,12 +129,16 @@ export default create({
       () => props.visible,
       (value) => {
         showPopup.value = value;
+        if (value) {
+          emit('opened');
+        }
       }
     );
 
     const classes = computed(() => {
       return {
-        [componentName]: true
+        [componentName]: true,
+        [props.customClass]: true
       };
     });
 
@@ -144,21 +147,32 @@ export default create({
       emit('update:visible', val);
     };
 
-    const closed = () => {
-      update(false);
-      emit('closed');
+    const closed = (action: string) => {
+      funInterceptor(props.beforeClose, {
+        args: [action],
+        done: () => {
+          update(false);
+          emit('closed');
+        }
+      });
     };
 
     const onCancel = () => {
       emit('cancel');
       if (props.cancelAutoClose) {
-        closed();
+        closed('cancel');
       }
     };
 
     const onOk = () => {
       emit('ok');
-      closed();
+      closed('ok');
+    };
+
+    const onClickOverlay = () => {
+      if (props.closeOnClickOverlay) {
+        closed('');
+      }
     };
 
     return {
@@ -166,7 +180,9 @@ export default create({
       classes,
       onCancel,
       onOk,
-      showPopup
+      showPopup,
+      onClickOverlay,
+      translate
     };
   }
 });

@@ -1,16 +1,16 @@
 <template>
   <div class="demo">
-    <h2>基本用法</h2>
-    <nut-cell :title="`基本用法`" desc="" @click="base = true"></nut-cell>
+    <h2>{{ translate('basic') }}</h2>
+    <nut-cell :title="translate('basic')" desc="" @click="base = true"></nut-cell>
 
-    <h2>不可售</h2>
-    <nut-cell title="不可售" desc="" @click="notSell = true"></nut-cell>
+    <h2>{{ translate('noSell') }}</h2>
+    <nut-cell :title="translate('noSell')" desc="" @click="notSell = true"></nut-cell>
 
-    <h2>自定义计步器</h2>
-    <nut-cell title="自定义计步器" desc="" @click="customStepper = true"></nut-cell>
+    <h2>{{ translate('customStepper') }}</h2>
+    <nut-cell :title="translate('customStepper')" desc="" @click="customStepper = true"></nut-cell>
 
-    <h2>自定义插槽</h2>
-    <nut-cell title="通过插槽自定义设置" desc="" @click="customBySlot = true"></nut-cell>
+    <h2>{{ translate('slots') }}</h2>
+    <nut-cell :title="translate('slots')" desc="" @click="customBySlot = true"></nut-cell>
 
     <nut-sku
       v-model:visible="base"
@@ -107,11 +107,27 @@
 
 <script lang="ts">
 import { reactive, ref, toRefs, onMounted } from 'vue';
-import { Sku, Goods, imagePathMap } from './data';
 
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
+import { useTranslate } from '@/sites/assets/util/useTranslate';
 import { Toast } from '@/packages/nutui.vue';
-const { createDemo } = createComponent('sku');
+const { createDemo, translate } = createComponent('sku');
+
+const initTranslate = () =>
+  useTranslate({
+    'zh-CN': {
+      basic: '基本用法',
+      noSell: '不可售',
+      customStepper: '自定义计步器',
+      slots: '自定义插槽'
+    },
+    'en-US': {
+      basic: 'Basic Usage',
+      noSell: 'Not Sell',
+      customStepper: 'Custom Stepper',
+      slots: 'Custom Slots'
+    }
+  });
 
 interface Skus {
   id: number;
@@ -136,12 +152,14 @@ interface GoodsProps {
 
 interface Data {
   skuData: Skus[];
-  goodsInfo: GoodsProps;
+  goodsInfo: any;
+  imagePathMap: any;
 }
 
 export default createDemo({
   props: {},
   setup() {
+    initTranslate();
     const popup = reactive({
       base: false,
       notSell: false,
@@ -153,7 +171,8 @@ export default createDemo({
 
     const data = reactive<Data>({
       skuData: [],
-      goodsInfo: {}
+      goodsInfo: {},
+      imagePathMap: {}
     });
 
     const stepperExtraText = () => {
@@ -206,10 +225,15 @@ export default createDemo({
     });
 
     const getData = () => {
-      setTimeout(() => {
-        data.skuData = Sku;
-        data.goodsInfo = Goods;
-      }, 500);
+      fetch('//storage.360buyimg.com/nutui/3x/data.js')
+        .then((response) => response.json())
+        .then((res) => {
+          const { Sku, Goods, imagePathMap } = res;
+          data.skuData = Sku;
+          data.goodsInfo = Goods;
+          data.imagePathMap = imagePathMap;
+        }) //执行结果是 resolve就调用then方法
+        .catch((err) => console.log('Oh, error', err)); //执行结果是 reject就调用catch方法
     };
     const selectSku = (s: any) => {
       const { sku, parentIndex } = s;
@@ -227,7 +251,7 @@ export default createDemo({
 
       data.skuData[0].list.forEach((el) => {
         if (el.active && !el.disable) {
-          data.goodsInfo.imagePath = imagePathMap[el.id];
+          data.goodsInfo.imagePath = data.imagePathMap[el.id];
         }
       });
     };
@@ -262,7 +286,6 @@ export default createDemo({
     return {
       selectSku,
       changeStepper,
-      Goods,
       clickBtnOperate,
       close,
       existAddress,
@@ -271,6 +294,7 @@ export default createDemo({
       stepperExtraText,
       btnExtraText,
       overLimit,
+      translate,
       ...toRefs(popup),
       ...toRefs(data)
     };

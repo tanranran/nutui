@@ -1,166 +1,147 @@
 <template>
   <div class="demo full">
-    <h2>基础用法</h2>
-    <nut-navbar
-      @on-click-back="back"
-      @on-click-title="title"
-      @on-click-send="send"
-      title="订单详情"
-      icon="share-n"
-    ></nut-navbar>
-    <nut-navbar
-      @on-click-back="back"
-      @on-click-title="title"
-      @on-click-clear="clear"
-      title="浏览记录"
-      desc="清空"
-    ></nut-navbar>
-    <nut-navbar
-      :left-show="false"
-      @on-click-title="title"
-      @on-click-icon="icon"
-      @on-click-clear="edit"
-      @on-click-send="more"
-      title="购物车"
-      titIcon="cart2"
-      desc="编辑"
-      icon="more-x"
-    ></nut-navbar>
-
-    <h2>增加tab及右侧按钮</h2>
-    <nut-navbar
-      tab
-      :tabs="[
-        {
-          id: '11',
-          name: '商品'
-        },
-        {
-          id: '22',
-          name: '店铺'
-        }
-      ]"
-      @switch-tab="switchTab"
-      @on-click-back="back"
-      @on-click-title="title"
-      @on-click-clear="edit"
-      @on-click-send="list"
-      desc="编辑"
-      icon="horizontal-n"
-    >
+    <h2>{{ translate('title1') }}</h2>
+    <nut-navbar @on-click-back="back" @on-click-title="title" :title="translate('navTitle1')">
+      <template #left>
+        <div>{{ translate('back') }}</div>
+      </template>
+      <template #right>
+        <nut-icon class="right" name="share-n"></nut-icon>
+      </template>
     </nut-navbar>
 
-    <h2>多tab切换导航</h2>
     <nut-navbar
-      :tabs="tabList"
-      @switch-tab="switchTab"
       @on-click-back="back"
-      icon="more-x"
-      @on-click-send="send"
+      @on-click-title="title"
+      @on-click-right="rightClick"
+      :title="translate('navTitle2')"
+      :desc="translate('desc1')"
+    ></nut-navbar>
+
+    <nut-navbar
+      :left-show="false"
+      @on-click-back="back"
+      @on-click-title="title"
+      @on-click-icon="icon"
+      @on-click-right="rightClick"
+      :title="translate('navTitle3')"
+      titIcon="cart2"
+      :desc="translate('desc2')"
     >
+      <template #right>
+        <nut-icon class="right" name="more-x"></nut-icon>
+      </template>
+    </nut-navbar>
+
+    <h2>{{ translate('title2') }}</h2>
+    <nut-navbar @on-click-back="back" @on-click-title="title" @on-click-right="rightClick" :desc="translate('desc2')">
+      <template #content>
+        <nut-tabs v-model="tab1value" @click="changeTab">
+          <nut-tabpane :title="translate('tab1')"> </nut-tabpane>
+          <nut-tabpane :title="translate('tab2')"> </nut-tabpane>
+        </nut-tabs>
+      </template>
+
+      <template #right>
+        <nut-icon class="right" name="more-x"></nut-icon>
+      </template>
+    </nut-navbar>
+
+    <h2>{{ translate('title3') }}</h2>
+    <nut-navbar @on-click-back="back">
+      <template #content>
+        <nut-tabs v-model="tab2value" @click="changeTabList">
+          <nut-tabpane :title="translate('tab1')"> </nut-tabpane>
+          <nut-tabpane :title="translate('tab2')"> </nut-tabpane>
+          <nut-tabpane :title="translate('tab3')"> </nut-tabpane>
+        </nut-tabs>
+      </template>
       <template #icons>
-        <nut-icon
-          class="icon"
-          name="share"
-          @on-click-slot-send="morelist"
-        ></nut-icon>
+        <nut-icon class="icon" name="share"></nut-icon>
+      </template>
+
+      <template #right>
+        <nut-icon class="right" name="horizontal-n"></nut-icon>
       </template>
     </nut-navbar>
   </div>
 </template>
 
 <script lang="ts">
-import { reactive } from 'vue';
-import { createComponent } from '../../utils/create';
-const { createDemo } = createComponent('navbar');
-export default createDemo({
-  setup(props, { emit }) {
-    const tabList = [
-      {
-        id: '11',
-        name: '商品'
-      },
-      {
-        id: '22',
-        name: '评价'
-      },
-      {
-        id: '33',
-        name: '详情'
-      },
-      {
-        id: '44',
-        name: '推荐'
-      },
-      {
-        id: '55',
-        name: '商品'
-      },
-      {
-        id: '66',
-        name: '评价'
-      },
-      {
-        id: '77',
-        name: '详情'
-      },
-      {
-        id: '88',
-        name: '推荐'
-      }
-    ];
-    const back = () => {
-      alert('header头部， 点击返回');
-    };
-    const title = () => {
-      alert('header头部， 点击title');
-    };
-    const right = () => {
-      alert('header头部， 点击右侧按钮');
-    };
-    const icon = () => {
-      alert('icon');
-    };
-    const send = () => {
-      alert('发送');
-    };
-    const edit = () => {
-      alert('编辑');
-    };
-    const more = () => {
-      alert('更多');
-    };
-    const clear = () => {
-      alert('清空');
-    };
-    const list = () => {
-      alert('列表');
-    };
-    const morelist = () => {
-      alert('多个更多');
-    };
-    function switchTab(id: number, name: string) {
-      console.log(id, name);
+import { ref } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+const { createDemo, translate } = createComponent('navbar');
+import { useTranslate } from '@/sites/assets/util/useTranslate';
+const initTranslate = () =>
+  useTranslate({
+    'zh-CN': {
+      title1: '基础用法',
+      back: '返回',
+      navTitle1: '订单详情',
+      navTitle2: '浏览记录',
+      desc1: '清空',
+      navTitle3: '购物车',
+      desc2: '编辑',
+      title2: '自定义导航栏中间内容',
+      tab1: '标题1',
+      tab2: '标题2',
+      tab3: '标题3',
+      title3: '多 tab 切换导航'
+    },
+    'en-US': {
+      title1: 'Basic Usage',
+      back: 'Back',
+      navTitle1: 'Order details',
+      navTitle2: 'Browsing history',
+      desc1: 'Clear',
+      navTitle3: 'Cart',
+      desc2: 'Edit',
+      title2: 'Customize the middle content of the navigation bar',
+      tab1: 'Title1',
+      tab2: 'Title2',
+      tab3: 'Title3',
+      title3: 'Multi-tab switching navigation'
     }
+  });
+export default createDemo({
+  setup({}) {
+    initTranslate();
+    const tab1value = ref(0);
+    const tab2value = ref(0);
+    const methods = {
+      back() {
+        alert('header头部， 点击返回');
+      },
+      title() {
+        alert('header头部， 点击title');
+      },
+      icon() {
+        alert('icon');
+      },
+
+      rightClick() {
+        alert('右侧点击事件');
+      },
+      changeTab(tab: any) {
+        tab1value.value = tab.paneKey as number;
+      },
+      changeTabList(tab: any) {
+        tab2value.value = tab.paneKey as number;
+      }
+    };
 
     return {
-      back,
-      title,
-      right,
-      send,
-      edit,
-      clear,
-      more,
-      list,
-      icon,
-      morelist,
-      switchTab,
-      ...reactive({
-        tabList
-      })
+      translate,
+      tab1value,
+      tab2value,
+      ...methods
     };
   }
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.right {
+  margin-left: 10px;
+}
+</style>

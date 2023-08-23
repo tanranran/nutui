@@ -9,9 +9,21 @@ const modulesPage = import.meta.glob('/src/packages/__VUE/**/doc.md');
 for (const path in modulesPage) {
   let name = (/packages\/__VUE\/(.*)\/doc.md/.exec(path) as any[])[1];
   pagesRouter.push({
-    path: '/' + name,
-    component: modulesPage[path],
-    name
+    path: '/zh-CN/' + name,
+    component: modulesPage[path]
+    // name
+  });
+}
+
+const pagesEnRouter: Array<RouteRecordRaw> = [];
+
+const modulesEnPage = import.meta.glob('/src/packages/__VUE/**/doc.en-US.md');
+for (const path in modulesEnPage) {
+  let name = (/packages\/__VUE\/(.*)\/doc.en-US.md/.exec(path) as any[])[1];
+  pagesEnRouter.push({
+    path: '/en-US/' + name,
+    component: modulesEnPage[path]
+    // name: 'en' + name
   });
 }
 
@@ -20,25 +32,35 @@ const modulesPageTaro = import.meta.glob('/src/packages/__VUE/**/*.taro.md');
 for (const path in modulesPageTaro) {
   let name = (/packages\/__VUE\/(.*)\/doc.taro.md/.exec(path) as any[])[1];
   pagesRouter.push({
-    path: `/${name}-taro`,
-    component: modulesPageTaro[path],
-    name: `${name}-taro`
+    path: `/zh-CN//${name}-taro`,
+    component: modulesPageTaro[path]
+    // name: `${name}-taro`
+  });
+  pagesRouter.push({
+    path: `/en-US/${name}-taro`,
+    component: modulesPageTaro[path]
   });
 }
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: '/',
+    path: '/zh-CN/',
+    name: '/zh-CN/',
     component: Index,
     children: pagesRouter
+  },
+  {
+    path: '/en-US/',
+    name: '/en-US/',
+    component: Index,
+    children: pagesEnRouter
   }
 ];
 routes.push({
   name: 'notFound',
   path: '/:path(.*)+',
   redirect: {
-    name: '/'
+    name: '/zh-CN/'
   }
 });
 const router = createRouter({

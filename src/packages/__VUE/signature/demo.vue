@@ -1,38 +1,95 @@
 <template>
   <div class="demo">
-    <h2>基础用法</h2>
+    <h2>{{ translate('basic') }}</h2>
     <div>
-      <nut-signature @confirm="confirm" @clear="clear"></nut-signature>
-      <p class="demo-tips demo1">Tips: 点击确认按钮,下方显示签名图片</p>
+      <nut-signature ref="demo" @confirm="confirm" @clear="clear" custom-class="test" @start="start"></nut-signature>
+      <img :src="demoSignUrl" class="demoSignUrl" v-if="demoSignUrl" />
     </div>
-    <h2>修改颜色和签字粗细</h2>
+    <h2>{{ translate('title') }}</h2>
     <div>
       <nut-signature
+        @confirm="confirm2"
+        @clear="clear2"
         :lineWidth="lineWidth"
         :strokeStyle="strokeStyle"
+        @end="end"
       ></nut-signature>
+      <img :src="demoSignUrl2" class="demoSignUrl" v-if="demoSignUrl2" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { reactive } from 'vue';
-import { createComponent } from '../../utils/create';
-const { createDemo } = createComponent('signature');
+import { reactive, ref } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+const { createDemo, translate } = createComponent('signature');
+import { useTranslate } from '@/sites/assets/util/useTranslate';
+const initTranslate = () =>
+  useTranslate({
+    'zh-CN': {
+      basic: '基础用法',
+      title: '修改颜色和签字粗细',
+      tips: 'Tips: 点击确认按钮,下方显示签名图片'
+    },
+    'en-US': {
+      basic: 'Basic Usage',
+      title: 'Modify color and signature thickness',
+      tips: 'Tips: click the confirm button, and the signature image is displayed below'
+    }
+  });
 export default createDemo({
   props: {},
   setup() {
+    initTranslate();
+    const demoSignUrl = ref('');
+    const demoSignUrl2 = ref('');
     const state = reactive({
       lineWidth: 4,
       strokeStyle: 'green'
     });
 
-    const confirm = (canvas: any, data: any) => {
-      let img = document.createElement('img');
-      img.src = data;
-      document.querySelector('.demo1').appendChild(img);
+    const clear = () => {
+      demoSignUrl.value = '';
+      console.log('清除事件');
     };
-    return { ...state, confirm };
+    const clear2 = () => {
+      demoSignUrl2.value = '';
+      console.log('清除事件');
+    };
+    const confirm = (canvas: any, data: any) => {
+      if (data === '') {
+        console.log(canvas);
+        return false;
+      }
+      demoSignUrl.value = data;
+      console.log('图片地址', canvas, data);
+    };
+    const confirm2 = (canvas: any, data: any) => {
+      if (data === '') {
+        console.log(canvas);
+        return false;
+      }
+      demoSignUrl2.value = data;
+      console.log('图片地址', canvas, data);
+    };
+    const start = () => {
+      console.log('签名开始');
+    };
+    const end = () => {
+      console.log('签名结束');
+    };
+    return {
+      ...state,
+      confirm,
+      clear,
+      translate,
+      demoSignUrl,
+      demoSignUrl2,
+      confirm2,
+      clear2,
+      start,
+      end
+    };
   }
 });
 </script>

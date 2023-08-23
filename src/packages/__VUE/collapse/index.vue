@@ -1,11 +1,11 @@
 <template>
-  <view>
+  <view ref="collapseDom">
     <slot></slot>
   </view>
 </template>
 <script lang="ts">
-import { provide } from 'vue';
-import { createComponent } from '../../utils/create';
+import { getCurrentInstance, onMounted, provide, ref, watch } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 const { create } = createComponent('collapse');
 export default create({
   props: {
@@ -53,17 +53,36 @@ export default create({
     }
   },
   emits: ['update:active', 'change'],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
+    const collapseDom: any = ref(null);
+    const collapseChldren: any = ref([]);
+    watch(
+      () => props.active,
+      (newval: any, oldval) => {
+        let doms: any = collapseChldren.value;
+        Array.from(doms).forEach((item: any) => {
+          if (typeof newval == 'number' || typeof newval == 'string') {
+            item.changeOpen(newval == item.name ? true : false);
+          } else if (Object.values(newval) instanceof Array) {
+            const isOpen = newval.indexOf(Number(item.name)) > -1 || newval.indexOf(String(item.name)) > -1;
+            item.changeOpen(isOpen);
+          }
+          item.animation();
+        });
+      }
+    );
+
+    onMounted(() => {
+      collapseChldren.value = (getCurrentInstance() as any).provides.collapseParent.children || [];
+    });
+
     const changeVal = (val: string | number | Array<string | number>) => {
       emit('update:active', val);
       emit('change', val);
     };
 
     const changeValAry = (name: string) => {
-      const activeItem: any =
-        props.active instanceof Object
-          ? Object.values(props.active)
-          : props.active;
+      const activeItem: any = props.active instanceof Object ? Object.values(props.active) : props.active;
       let index = -1;
       activeItem.forEach((item: string | number, idx: number) => {
         if (String(item) == String(name)) {
@@ -77,9 +96,7 @@ export default create({
     const isExpanded = (name: string | number | Array<string | number>) => {
       const { accordion, active } = props;
       if (accordion) {
-        return typeof active === 'number' || typeof active === 'string'
-          ? active == name
-          : false;
+        return typeof active === 'number' || typeof active === 'string' ? active == name : false;
       }
     };
 
@@ -90,6 +107,8 @@ export default create({
       changeVal,
       isExpanded
     });
+
+    return { collapseDom };
   }
 });
 </script>

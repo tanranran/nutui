@@ -1,259 +1,302 @@
 <template>
-  <view
-    class="nut-picker__content"
-    :style="{ height: height + 'px' }"
-    @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"
-    @touchcancel="onTouchEnd"
-    @transitionend="stopMomentum"
-  >
-    <view class="nut-picker__wrapper" ref="wrapper" :style="wrapperStyle">
-      <view
-        class="nut-picker__item"
-        :key="index"
-        v-for="(item, index) in options"
-        >{{ dataType === 'cascade' ? item.text : item }}</view
-      >
+  <view class="nut-picker__list" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
+    <view
+      class="nut-picker-roller"
+      ref="roller"
+      :style="threeDimensional ? touchRollerStyle : touchTileStyle"
+      @transitionend="stopMomentum"
+    >
+      <template v-for="(item, index) in column" :key="item.value ? item.value : index">
+        <!-- 3D 效果 -->
+        <view
+          class="nut-picker-roller-item"
+          :class="{ 'nut-picker-roller-item-hidden': isHidden(index + 1) }"
+          :style="setRollerStyle(index + 1)"
+          v-if="item && item.text && threeDimensional"
+        >
+          {{ item.text }}
+        </view>
+        <!-- 平铺 -->
+        <view class="nut-picker-roller-item-tile" v-if="item && item.text && !threeDimensional">
+          {{ item.text }}
+        </view>
+      </template>
     </view>
+    <view class="nut-picker-roller-mask"></view>
   </view>
 </template>
 <script lang="ts">
-import { reactive, ref, watch, computed, toRefs, onMounted } from 'vue';
-import { createComponent } from '../../utils/create';
-import { useTouch } from '../../utils/useTouch';
-import { commonProps } from './commonProps';
-import {
-  PickerObjOpt,
-  PickerOption,
-  PickerObjectColumn,
-  PickerObjectColumns
-} from './types';
-const MOMENTUM_LIMIT_DISTANCE = 15;
-const MOMENTUM_LIMIT_TIME = 300;
-const DEFAULT_DURATION = 200;
+import { reactive, ref, watch, computed, toRefs, onMounted, PropType } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+import { PickerOption, TouchParams } from './types';
+import { preventDefault, clamp } from '@/packages/utils/util';
+import { useTouch } from '@/packages/utils/useTouch';
 const { create } = createComponent('picker-column');
-function range(num: number, min: number, max: number): number {
-  return Math.min(Math.max(num, min), max);
-}
-function stopPropagation(event: Event) {
-  event.stopPropagation();
-}
-function preventDefault(event: Event, isStopPropagation?: boolean) {
-  if (typeof event.cancelable !== 'boolean' || event.cancelable) {
-    event.preventDefault();
-  }
-
-  if (isStopPropagation) {
-    stopPropagation(event);
-  }
-}
-
-function getElementTranslateY(element: Element) {
-  const style = window.getComputedStyle(element);
-  const transform = style.transform || style.webkitTransform;
-  const translateY = transform.slice(7, transform.length - 1).split(', ')[5];
-  return Number(translateY);
-}
-export function isObject(val: unknown): val is Record<any, any> {
-  return val !== null && typeof val === 'object';
-}
-
-function isOptionDisabled(option: PickerObjectColumn) {
-  return isObject(option) && option.disabled;
-}
 
 export default create({
   props: {
-    dataType: String,
-    ...commonProps
+    // 当前选中项
+    value: [String, Number],
+    columnsType: String,
+    itemShow: {
+      type: Boolean,
+      default: false
+    },
+    column: {
+      type: Array as PropType<PickerOption[]>,
+      default: () => []
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    // 是否开启3D效果
+    threeDimensional: {
+      type: Boolean,
+      default: true
+    },
+    swipeDuration: {
+      type: [Number, String],
+      default: 1000
+    }
   },
 
   emits: ['click', 'change'],
   setup(props, { emit }) {
-    const wrapper = ref();
+    const touch: any = useTouch();
 
+    const wrapper = ref();
     const state = reactive({
-      index: props.defaultIndex,
-      offset: 0,
-      duration: 0,
-      options: props.listData as PickerObjectColumn[],
-      moving: false,
-      startOffset: 0,
-      touchStartTime: 0,
-      momentumOffset: 0,
-      transitionEndTrigger: null as null | Function
+      touchParams: {
+        startY: 0,
+        endY: 0,
+        startTime: 0,
+        endTime: 0,
+        lastY: 0,
+        lastTime: 0
+      },
+
+      currIndex: 1,
+      transformY: 0,
+      scrollDistance: 0,
+      lineSpacing: 36,
+      rotation: 20
     });
 
-    const touch = useTouch();
+    const roller = ref(null);
 
-    const wrapperStyle = computed(() => ({
-      transform: `translate3d(0, ${state.offset + baseOffset()}px, 0)`,
-      transitionDuration: `${state.duration}ms`,
-      transitionProperty: state.duration ? 'all' : 'none'
-    }));
+    const moving = ref(false);
+    const touchDeg = ref(0);
+    const touchTime = ref(0);
 
-    const handleClick = (event: Event) => {
-      emit('click', event);
-    };
+    const DEFAULT_DURATION = 200;
 
-    const getIndexByOffset = (offset: number) => {
-      return range(
-        Math.round(-offset / +props.itemHeight),
-        0,
-        state.options.length - 1
-      );
-    };
+    // 触发惯性滑动条件:
+    // 在手指离开屏幕时，如果和上一次 move 时的间隔小于 `MOMENTUM_TIME` 且 move
+    // 距离大于 `MOMENTUM_DISTANCE` 时，执行惯性滑动
+    const INERTIA_TIME = 300;
+    const INERTIA_DISTANCE = 15;
 
-    const baseOffset = () => {
-      return (+props.itemHeight * (+props.visibleItemCount - 1)) / 2;
-    };
-
-    const stopMomentum = () => {
-      state.moving = false;
-      state.duration = 0;
-      if (state.transitionEndTrigger) {
-        state.transitionEndTrigger();
-        state.transitionEndTrigger = null;
-      }
-    };
-
-    const adjustIndex = (index: number) => {
-      index = range(index, 0, state.options.length);
-
-      for (let i = index; i < state.options.length; i++) {
-        if (!isOptionDisabled(state.options[i])) return i;
-      }
-      for (let i = index - 1; i >= 0; i--) {
-        if (!isOptionDisabled(state.options[i])) return i;
-      }
-    };
-
-    const setIndex = (index: number, emitChange = false) => {
-      index = adjustIndex(index) || 0;
-
-      const offset = -index * +props.itemHeight;
-      const trigger = () => {
-        if (index !== state.index) {
-          state.index = index;
-
-          if (emitChange) {
-            emit('change', index);
-          }
-        }
+    const touchRollerStyle = computed(() => {
+      return {
+        transition: `transform ${touchTime.value}ms cubic-bezier(0.17, 0.89, 0.45, 1)`,
+        transform: `rotate3d(1, 0, 0, ${touchDeg.value})`
       };
+    });
 
-      if (state.moving && offset !== state.offset) {
-        state.transitionEndTrigger = trigger;
-      } else {
-        trigger();
-      }
+    const touchTileStyle = computed(() => {
+      return {
+        transition: `transform ${touchTime.value}ms cubic-bezier(0.17, 0.89, 0.45, 1)`,
+        transform: `translate3d(0, ${state.scrollDistance}px, 0)`
+      };
+    });
 
-      state.offset = offset;
+    const setRollerStyle = (index: number) => {
+      return `transform: rotate3d(1, 0, 0, ${-state.rotation * index}deg) translate3d(0px, 0px, 104px)`;
     };
 
-    const momentum = (distance: number, duration: number) => {
-      const speed = Math.abs(distance / duration);
-
-      distance = state.offset + (speed / 0.03) * (distance < 0 ? -1 : 1);
-
-      const index = getIndexByOffset(distance);
-
-      setIndex(index, true);
-    };
-
-    const onTouchStart = (event: Event) => {
-      if (props.readonly) {
-        return;
-      }
+    const onTouchStart = (event: TouchEvent) => {
       touch.start(event);
-
-      if (state.moving) {
-        const translateY = getElementTranslateY(wrapper.value);
-        state.offset = Math.min(0, translateY - baseOffset());
-        state.startOffset = state.offset;
-      } else {
-        state.startOffset = state.offset;
+      if (moving.value) {
+        let dom = roller.value as any;
+        const { transform } = window.getComputedStyle(dom);
+        if (props.threeDimensional) {
+          const circle = Math.floor(parseFloat(touchDeg.value) / 360);
+          const cos = +transform.split(', ')[5];
+          const sin = +transform.split(', ')[6] < 0 ? 180 : 0;
+          const endDeg = circle * 360 + (Math.acos(cos) / Math.PI) * 180 + sin;
+          state.scrollDistance = -Math.abs((endDeg / state.rotation - 1) * state.lineSpacing);
+        } else {
+          state.scrollDistance = +transform.slice(7, transform.length - 1).split(', ')[5];
+        }
       }
 
-      state.duration = 0;
-      state.touchStartTime = Date.now();
-      state.momentumOffset = state.startOffset;
-      state.transitionEndTrigger = null;
+      preventDefault(event, true);
+
+      state.touchParams.startY = touch.deltaY.value;
+      state.touchParams.startTime = Date.now();
+      state.transformY = state.scrollDistance;
     };
-    const onTouchMove = (event: Event) => {
-      if (props.readonly) {
-        return;
-      }
-      state.moving = true;
-      touch.move(event);
 
-      if (touch.isVertical()) {
-        state.moving = true;
+    const onTouchMove = (event: TouchEvent) => {
+      touch.move(event);
+      if ((touch as any).isVertical()) {
+        moving.value = true;
         preventDefault(event, true);
       }
-
-      const moveOffset = state.startOffset + touch.deltaY.value;
-      if (moveOffset > props.itemHeight) {
-        state.offset = props.itemHeight as number;
-      } else {
-        state.offset = state.startOffset + touch.deltaY.value;
-      }
-
-      const now = Date.now();
-
-      if (now - state.touchStartTime > MOMENTUM_LIMIT_TIME) {
-        state.touchStartTime = now;
-        state.momentumOffset = state.offset;
-      }
+      (state.touchParams as TouchParams).lastY = touch.deltaY.value;
+      let move = state.touchParams.lastY - state.touchParams.startY;
+      setMove(move);
     };
-    const onTouchEnd = () => {
-      const index = getIndexByOffset(state.offset);
-      state.duration = DEFAULT_DURATION;
-      setIndex(index, true);
-      const distance = state.offset - state.momentumOffset;
-      const duration = Date.now() - state.touchStartTime;
 
-      const allowMomentum =
-        duration < MOMENTUM_LIMIT_TIME &&
-        Math.abs(distance) > MOMENTUM_LIMIT_DISTANCE;
+    const onTouchEnd = (event: TouchEvent) => {
+      state.touchParams.lastY = touch.deltaY.value;
+      state.touchParams.lastTime = Date.now();
+      let move = state.touchParams.lastY - state.touchParams.startY;
 
-      if (allowMomentum) {
-        momentum(distance, duration);
+      let moveTime = state.touchParams.lastTime - state.touchParams.startTime;
+
+      if (moveTime <= INERTIA_TIME && Math.abs(move) > INERTIA_DISTANCE) {
+        // 惯性滚动
+        const distance = momentum(move, moveTime);
+        setMove(distance, 'end', +props.swipeDuration);
         return;
+      } else {
+        setMove(move, 'end');
+      }
+
+      setTimeout(() => {
+        touch.reset();
+        moving.value = false;
+      }, 0);
+    };
+
+    // 惯性滚动 距离
+    const momentum = (distance: number, duration: number) => {
+      // 惯性滚动的速度
+      const speed = Math.abs(distance / duration);
+      // 惯性滚动的距离
+      distance = (speed / 0.003) * (distance < 0 ? -1 : 1);
+      return distance;
+    };
+
+    const isHidden = (index: number) => {
+      if (index >= state.currIndex + 8 || index <= state.currIndex - 8) {
+        return true;
+      } else {
+        return false;
       }
     };
 
-    onMounted(() => {
-      setIndex(+props.defaultIndex);
-    });
+    const setTransform = (translateY = 0, type: string | null, time = DEFAULT_DURATION, deg: string | number) => {
+      if (type === 'end') {
+        touchTime.value = time;
+      } else {
+        touchTime.value = 0;
+      }
+      touchDeg.value = deg as number;
+      state.scrollDistance = translateY;
+    };
 
-    watch(
-      () => props.listData,
-      (val) => {
-        if (val) {
-          state.options = val as PickerObjectColumn[];
+    const setMove = (move: number, type?: string, time?: number) => {
+      let updateMove = move + state.transformY;
+
+      if (type === 'end') {
+        // 限定滚动距离
+        if (updateMove > 0) {
+          updateMove = 0;
+        }
+        if (updateMove < -(props.column.length - 1) * state.lineSpacing) {
+          updateMove = -(props.column.length - 1) * state.lineSpacing;
+        }
+
+        // 设置滚动距离为lineSpacing的倍数值
+        let endMove = Math.round(updateMove / state.lineSpacing) * state.lineSpacing;
+        let deg = `${(Math.abs(Math.round(endMove / state.lineSpacing)) + 1) * state.rotation}deg`;
+
+        setTransform(endMove, type, time, deg);
+
+        state.currIndex = Math.abs(Math.round(endMove / state.lineSpacing)) + 1;
+      } else {
+        let deg = 0;
+        let currentDeg = (-updateMove / state.lineSpacing + 1) * state.rotation;
+
+        // picker 滚动的最大角度
+        const maxDeg = (props.column.length + 1) * state.rotation;
+        const minDeg = 0;
+
+        deg = clamp(currentDeg, minDeg, maxDeg);
+
+        if (minDeg < deg && deg < maxDeg) {
+          setTransform(updateMove, null, undefined, deg + 'deg');
+          state.currIndex = Math.abs(Math.round(updateMove / state.lineSpacing)) + 1;
         }
       }
+    };
+
+    const setChooseValue = () => {
+      emit('change', props.column[state.currIndex - 1]);
+    };
+
+    const modifyStatus = (type: boolean) => {
+      const { column } = props;
+      let index = column.findIndex((columnItem) => columnItem.value == props.value);
+
+      state.currIndex = index === -1 ? 1 : (index as number) + 1;
+      let move = index === -1 ? 0 : (index as number) * state.lineSpacing;
+      type && setChooseValue();
+      setMove(-move);
+    };
+
+    // 惯性滚动结束
+    const stopMomentum = () => {
+      moving.value = false;
+      touchTime.value = 0;
+      setChooseValue();
+    };
+
+    watch(
+      () => props.column,
+      (val) => {
+        if (props.column && props.column.length > 0) {
+          state.transformY = 0;
+          modifyStatus(false);
+        }
+      },
+      {
+        deep: true
+      }
     );
 
     watch(
-      () => props.defaultIndex,
+      () => props.value,
       (val) => {
-        setIndex(+val);
+        state.transformY = 0;
+        modifyStatus(false);
+      },
+      {
+        deep: true
       }
     );
+
+    onMounted(() => {
+      modifyStatus(true);
+    });
 
     return {
       ...toRefs(state),
+      ...toRefs(props),
       wrapper,
+      setRollerStyle,
+      isHidden,
+      roller,
       onTouchStart,
       onTouchMove,
       onTouchEnd,
-      wrapperStyle,
-      stopMomentum,
-      columns: state.options,
-      height: Number(props.visibleItemCount) * +props.itemHeight
+      touchRollerStyle,
+      touchTileStyle,
+      setMove,
+      stopMomentum
     };
   }
 });

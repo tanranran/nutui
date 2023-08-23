@@ -1,4 +1,13 @@
 const path = require('path');
+// npm run dev:taro:weapp [jdt|jddkh|jdt]
+const themeMap = {
+  jdb: 'variables-jdb.scss',
+  jddkh: 'variables-jddkh.scss',
+  jdt: 'variables-jdt.scss'
+};
+const lastArg = process.argv[process.argv.length - 1];
+const theme = themeMap[lastArg] || 'variables.scss';
+
 const config = {
   projectName: '@nutui/nutui-taro-mobile',
   date: '2021-5-29',
@@ -13,14 +22,11 @@ const config = {
   outputRoot: 'dist',
   plugins: ['@tarojs/plugin-html'],
   alias: {
-    '@vue': path.resolve(__dirname, '../../../../../node_modules/@vue')
+    '@vue': path.resolve(__dirname, '../../../../../node_modules/@vue'),
+    '@/packages': path.resolve(__dirname, '../../../../../src/packages')
   },
   sass: {
-    resource: path.resolve(
-      __dirname,
-      '../../../../',
-      'packages/styles/variables.scss'
-    )
+    resource: path.resolve(__dirname, '../../../../', 'packages/styles', theme)
   },
   defineConstants: {},
   copy: {
@@ -28,6 +34,7 @@ const config = {
     options: {}
   },
   framework: 'vue3',
+  compiler: 'webpack5',
   mini: {
     postcss: {
       pxtransform: {
@@ -56,6 +63,10 @@ const config = {
       autoprefixer: {
         enable: true,
         config: {}
+      },
+      pxtransform: {
+        enable: true,
+        config: { selectorBlackList: ['nut-'] }
       },
       cssModules: {
         enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true

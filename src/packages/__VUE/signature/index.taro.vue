@@ -1,7 +1,8 @@
 <template>
   <div :class="classes">
-    <div class="nut-signature-inner">
+    <div :class="['nut-signature-inner', 'spcanvas_WEAPP']">
       <canvas
+        ref="spcanvas"
         class="spcanvas"
         id="spcanvas"
         canvasId="spcanvas"
@@ -12,17 +13,17 @@
         @touchmove="moveEventHandler"
         @touchend="endEventHandler"
         @touchleave="leaveEventHandler"
-      />
+      ></canvas>
     </div>
-    <nut-button class="nut-signature-btn" type="default" @click="clear()">重签</nut-button>
-    <nut-button class="nut-signature-btn" type="primary" @click="confirm()">确认</nut-button>
+    <nut-button class="nut-signature-btn" type="default" @click="clear()">{{ translate('reSign') }}</nut-button>
+    <nut-button class="nut-signature-btn" type="primary" @click="confirm()">{{ translate('confirm') }}</nut-button>
   </div>
 </template>
 <script lang="ts">
 import Taro from '@tarojs/taro';
 import { ref, reactive, onMounted, computed } from 'vue';
-import { createComponent } from '../../utils/create';
-const { componentName, create } = createComponent('signature');
+import { createComponent } from '@/packages/utils/create';
+const { componentName, create, translate } = createComponent('signature');
 
 export default create({
   props: {
@@ -44,11 +45,11 @@ export default create({
     },
     unSupportTpl: {
       type: String,
-      default: '对不起，当前浏览器不支持Canvas，无法使用本控件！'
+      default: ''
     }
   },
   components: {},
-  emits: ['confirm', 'clear'],
+  emits: ['start', 'end', 'signing', 'confirm', 'clear'],
 
   setup(props, { emit }) {
     const classes = computed(() => {
@@ -58,7 +59,9 @@ export default create({
         [`${props.customClass}`]: props.customClass
       };
     });
-    const state = reactive({
+    const spcanvas: any = ref<HTMLElement | null>(null);
+
+    const state: any = reactive({
       canvas: null,
       canvasHeight: 0,
       canvasWidth: 0,
@@ -67,25 +70,44 @@ export default create({
 
     const startEventHandler = (event: MouseEvent) => {
       event.preventDefault();
+      if (!state.ctx) {
+        return false;
+      }
+      emit('start');
       state.ctx.beginPath();
       state.ctx.lineWidth = props.lineWidth;
       state.ctx.strokeStyle = props.strokeStyle;
     };
-
-    const moveEventHandler = (event) => {
+    const isDraw = ref(false);
+    const moveEventHandler = (event: { preventDefault: () => void; changedTouches: any[] }) => {
       event.preventDefault();
-
+      if (!state.ctx) {
+        return false;
+      }
+      isDraw.value = true;
       let evt = event.changedTouches[0];
-      let mouseX = evt.x;
-      let mouseY = evt.y;
-      state.ctx.lineTo(mouseX, mouseY);
-      state.ctx.stroke();
+      emit('signing', evt);
+      let mouseX = evt.x || evt.clientX;
+      let mouseY = evt.y || evt.clientY;
+
+      if (Taro.getEnv() === 'WEB') {
+        let coverPos = spcanvas.value.getBoundingClientRect();
+        mouseX = evt.clientX - coverPos.left;
+        mouseY = evt.clientY - coverPos.top;
+      }
+      Taro.nextTick(() => {
+        state.ctx.lineCap = 'round';
+        state.ctx.lineJoin = 'round';
+        state.ctx?.lineTo(mouseX, mouseY);
+        state.ctx?.stroke();
+      });
     };
 
-    const endEventHandler = (event) => {
+    const endEventHandler = (event: { preventDefault: () => void }) => {
       event.preventDefault();
+      emit('end');
     };
-    const leaveEventHandler = (event) => {
+    const leaveEventHandler = (event: { preventDefault: () => void }) => {
       event.preventDefault();
     };
     const clear = () => {
@@ -93,6 +115,7 @@ export default create({
       state.ctx.closePath();
 
       emit('clear');
+      isDraw.value = false;
     };
 
     const confirm = () => {
@@ -112,46 +135,94 @@ export default create({
         .exec(async (res) => {
           Taro.canvasToTempFilePath({
             canvas: res[0].node,
-            fileType: props.type
-          })
-            .then((res) => {
-              emit('confirm', res.tempFilePath);
-            })
-            .catch((e) => {
-              emit('confirm', e);
-            });
+            canvasId: 'spcanvas',
+            fileType: props.type,
+            success: function (result) {
+              const _canvas = !isDraw.value ? '请绘制签名' : state.canvas;
+              const _filePath = !isDraw.value ? '' : result.tempFilePath;
+              emit('confirm', _canvas, _filePath);
+              // emit('confirm', state.canvas, result.tempFilePath);
+            },
+            fail: function (result) {
+              emit('confirm', result);
+            }
+          });
         });
     };
 
     onMounted(() => {
-      setTimeout(() => {
-        Taro.createSelectorQuery()
-          .select('#spcanvas')
-          .fields(
-            {
-              node: true,
-              size: true
-            },
-            function (res) {
-              const canvas = res.node;
-              const ctx = canvas.getContext('2d');
-              state.canvas = canvas;
-              state.ctx = ctx;
-              state.canvasWidth = res.width;
-              state.canvasHeight = res.height;
+      Taro.nextTick(() => {
+        setTimeout(() => {
+          if (Taro.getEnv() === 'WEAPP' || Taro.getEnv() === 'JD') {
+            Taro.createSelectorQuery()
+              .select('#spcanvas')
+              .fields(
+                {
+                  node: true,
+                  size: true
+                },
+                function (res) {
+                  const canvas = res.node;
+                  canvasSetting(canvas, res.width, res.height);
+                  // const dpr = Taro.getSystemInfoSync().pixelRatio;
+                  // const ctx = canvas.getContext('2d');
+                  // canvas.width = res.width * dpr;
+                  // canvas.height = res.height * dpr;
+                  // state.canvas = canvas;
+                  // ctx.scale(dpr, dpr);
+                  // state.ctx = ctx;
+                  // state.canvasWidth = res.width * dpr;
+                  // state.canvasHeight = res.height * dpr;
+                }
+              )
+              .exec();
+          } else {
+            const canvasDom: HTMLElement | null = document.getElementById('spcanvas');
+            let canvas: HTMLCanvasElement = canvasDom as HTMLCanvasElement;
+            if (canvasDom?.tagName !== 'CANVAS') {
+              canvas = canvasDom?.getElementsByTagName('canvas')[0] as HTMLCanvasElement;
             }
-          )
-          .exec();
-      }, 500);
+            canvasSetting(canvas, canvasDom?.offsetWidth as number, canvasDom?.offsetHeight as number);
+
+            //   const ctx: any = canvas.getContext('2d');
+            //   const dpr = Taro.getSystemInfoSync().pixelRatio;
+            //   const _w = (canvasDom?.offsetWidth as number) * dpr;
+            //   const _h = (canvasDom?.offsetHeight as number) * dpr;
+
+            //   canvas.width = _w;
+            //   canvas.height = _h;
+            //   state.canvas = canvas;
+            //   ctx?.scale(dpr, dpr);
+            //   state.ctx = ctx;
+            //   state.canvasWidth = _w;
+            //   state.canvasHeight = _h;
+          }
+        }, 1000);
+      });
     });
+    const canvasSetting = (canvasDom: any, width: number, height: number) => {
+      const canvas = canvasDom;
+      const dpr = Taro.getSystemInfoSync().pixelRatio;
+      const ctx = canvas.getContext('2d');
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      state.canvas = canvas;
+      ctx.scale(dpr, dpr);
+      state.ctx = ctx;
+      state.canvasWidth = width * dpr;
+      state.canvasHeight = height * dpr;
+    };
     return {
+      taroEnv: Taro.getEnv(),
+      spcanvas,
       confirm,
       clear,
       classes,
       startEventHandler,
       moveEventHandler,
       endEventHandler,
-      leaveEventHandler
+      leaveEventHandler,
+      translate
     };
   }
 });

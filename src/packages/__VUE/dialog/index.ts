@@ -1,19 +1,32 @@
 import Dialog from './index.vue';
-import { render, createVNode, h } from 'vue';
+import { h, VNode, CSSProperties } from 'vue';
+import Popup from '../popup/index.vue';
+import Icon from '../icon/index.vue';
+import Button from '../button/index.vue';
+import OverLay from '../overlay/index.vue';
+import { CreateComponent } from '@/packages/utils/create';
 export class DialogOptions {
   title?: string = '';
-  content?: string = '';
-  cancelText?: string = '取消';
-  okText?: string = '确定';
+  content?: string | VNode = '';
+  cancelText?: string = '';
+  okText?: string = '';
   textAlign?: string = 'center';
-  teleport?: String | HTMLElement = 'body';
+  customClass?: string = '';
+  overlayStyle?: CSSProperties = {};
+  overlayClass?: string = '';
+  popStyle?: CSSProperties = {};
+  popClass?: string = '';
+  teleport?: string | HTMLElement = 'body';
+  id?: string | number = new Date().getTime();
+  footerDirection?: string = 'horizontal'; //使用横纵方向 可选值 horizontal、vertical
 
   // function
   onUpdate?: Function = (value: boolean) => {};
   onOk?: Function = () => {};
   onCancel?: Function = () => {};
-  onClose?: Function = () => {};
+  onOpened?: Function = () => {};
   onClosed?: Function = () => {};
+  beforeClose?: Function;
 
   visible?: boolean = true;
   noFooter?: boolean = false;
@@ -21,59 +34,41 @@ export class DialogOptions {
   noCancelBtn?: boolean = false;
   okBtnDisabled?: boolean = false;
   closeOnPopstate?: boolean = false;
-  lockScroll?: boolean = false;
+  closeOnClickOverlay?: boolean = true;
+  lockScroll?: boolean = true;
 }
 
 class DialogFunction {
   options: DialogOptions = new DialogOptions();
-
+  instance: any;
   constructor(_options: DialogOptions) {
     let options = Object.assign(this.options, _options);
-    let elWarp: HTMLElement = document.body;
-    let teleport = options.teleport as string;
-    if (teleport != 'body') {
-      if (typeof teleport == 'string') {
-        elWarp = document.querySelector(teleport) as HTMLElement;
-      } else {
-        elWarp = options.teleport as HTMLElement;
-      }
-    }
-    const root = document.createElement('view');
-    root.id = 'dialog-' + new Date().getTime();
-    const Wrapper = {
-      setup() {
-        options.onUpdate = (val: boolean) => {
-          if (val == false) {
-            elWarp.removeChild(root);
+    const { unmount } = CreateComponent(options, {
+      name: 'dialog',
+      components: [Popup, Icon, Button, OverLay],
+      wrapper: (elWarp: any, root: any) => {
+        return {
+          setup() {
+            options.onUpdate = (val: boolean) => {
+              if (val == false) {
+                unmount();
+              }
+            };
+            if (options?.onOpened) {
+              options?.onOpened();
+            }
+            options.teleport = `#${root.id}`;
+            return () => {
+              return h(Dialog, options);
+            };
           }
         };
-        options.teleport = `#${root.id}`;
-        return () => {
-          return h(Dialog, options);
-        };
       }
-    };
-    const instance: any = createVNode(Wrapper);
-    elWarp.appendChild(root);
-    render(instance, root);
+    });
   }
-
-  close = () => {
-    // if (instance) {
-    //   instance.component.ctx.close();
-    // }
-  };
-
-  setDefaultOptions = (options: DialogOptions) => {
-    // Object.assign(this.currentOptions, options);
-  };
-
-  resetDefaultOptions = () => {
-    // Dialog.currentOptions = { ...Dialog.defaultOptions };
-  };
 }
 
-const _Dialog = function(options: DialogOptions) {
+const _Dialog = function (options: DialogOptions) {
   return new DialogFunction(options);
 };
 _Dialog.install = (app: any) => {

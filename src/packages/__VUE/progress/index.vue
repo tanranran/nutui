@@ -3,51 +3,52 @@
     <div
       class="nut-progress-outer"
       ref="progressOuter"
-      :class="[
-        showText && !textInside ? 'nut-progress-outer-part' : '',
-        size ? 'nut-progress-' + size : ''
-      ]"
+      :class="[showText && !textInside ? 'nut-progress-outer-part' : '', size ? 'nut-progress-' + size : '']"
       :style="{ height: height }"
     >
-      <div
-        :class="['nut-progress-inner', status == 'active' ? 'nut-active' : '']"
-        :style="bgStyle"
-      >
+      <div :class="['nut-progress-inner', status == 'active' ? 'nut-active' : '']" :style="bgStyle">
         <div
           class="nut-progress-text nut-progress-insidetext"
-          :style="{ lineHeight: height, left: left }"
-          v-if="showText && textInside"
+          ref="insideText"
+          :style="{
+            lineHeight: height,
+            left: `${percentage}%`,
+            transform: `translate(-${+percentage}%,-50%)`,
+            background: textBackground || strokeColor
+          }"
+          v-if="showText && textInside && !slotDefault"
         >
-          <span :style="textStyle">{{ percentage }}%</span>
+          <span :style="textStyle">{{ percentage }}{{ isShowPercentage ? '%' : '' }} </span>
+        </div>
+        <div
+          ref="insideText"
+          :style="{
+            position: `absolute`,
+            top: `50%`,
+            left: `${percentage}%`,
+            transform: `translate(-${+percentage}%,-50%)`,
+            transition: 'all 0.4s'
+          }"
+          v-if="showText && textInside && slotDefault"
+        >
+          <slot></slot>
         </div>
       </div>
     </div>
-    <div
-      class="nut-progress-text"
-      :style="{ lineHeight: height }"
-      v-if="showText && !textInside"
-    >
+    <div class="nut-progress-text" v-if="showText && !textInside">
       <template v-if="status == 'active' || status == ''">
-        <span :style="textStyle">{{ percentage }}%</span>
+        <span :style="textStyle">{{ percentage }}{{ isShowPercentage ? '%' : '' }}</span>
       </template>
       <template v-else-if="status == 'icon'">
-        <nut-icon size="16px" :name="iconName" :color="iconColor"></nut-icon>
+        <nut-icon v-bind="$attrs" size="16px" :name="iconName" :color="iconColor"></nut-icon>
       </template>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  onMounted,
-  provide,
-  reactive,
-  nextTick,
-  ref,
-  watch
-} from 'vue';
-import { createComponent } from '../../utils/create';
+import { computed, onMounted, useSlots, ref, watch } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 const { create } = createComponent('progress');
 export default create({
   props: {
@@ -81,7 +82,11 @@ export default create({
       default: ''
     },
     textColor: {
-      tyep: String,
+      type: String,
+      default: ''
+    },
+    textBackground: {
+      type: String,
       default: ''
     },
     iconName: {
@@ -91,15 +96,23 @@ export default create({
     iconColor: {
       type: String,
       default: '#439422'
+    },
+    isShowPercentage: {
+      type: Boolean,
+      default: true
     }
   },
-  setup(props, { emit }) {
+  setup(props) {
+    const slotDefault = !!useSlots().default;
     const height = ref(props.strokeWidth + 'px');
     const progressOuter = ref();
-    const left = ref();
+    const insideText = ref();
+    const percentage = computed(() => {
+      return props.percentage >= 100 ? 100 : props.percentage;
+    });
     const bgStyle = computed(() => {
       return {
-        width: props.percentage + '%',
+        width: percentage.value + '%',
         background: props.strokeColor || ''
       };
     });
@@ -108,33 +121,15 @@ export default create({
         color: props.textColor || ''
       };
     });
-
-    watch(
-      () => props.percentage,
-      (values) => {
-        console.log(
-          'progressOuter.value.offsetWidth',
-          progressOuter.value.offsetWidth
-        );
-
-        console.log('values', values);
-
-        left.value =
-          progressOuter.value.offsetWidth * Number(values) * 0.01 - 5 + 'px';
-      }
-    );
-    onMounted(() => {
-      left.value =
-        progressOuter.value.offsetWidth * Number(props.percentage) * 0.01 -
-        5 +
-        'px';
-    });
+    onMounted(() => {});
     return {
       height,
       bgStyle,
       textStyle,
+      percentage,
       progressOuter,
-      left
+      insideText,
+      slotDefault
     };
   }
 });

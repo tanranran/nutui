@@ -20,108 +20,144 @@ app.use(GridItem);
 
 ### 基础用法
 
-``` html
-<nut-grid>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 自定义列数
 
-``` html
-<nut-grid :column-num="3">
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid :column-num="3">
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 正方形格子
 
-``` html
-<nut-grid :column-num="3" square>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid :column-num="3" square>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 格子间距
 
-``` html
-<nut-grid :gutter="10">
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid :gutter="10">
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 内容翻转
 
-``` html
-<nut-grid reverse>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid reverse>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 内容横向
 
-``` html
-<nut-grid direction="horizontal">
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid direction="horizontal">
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 图标颜色/大小
 
-``` html
-<nut-grid :column-num="3" icon-color="#fa2c19">
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" icon-color="#478EF2" icon-size="40" text="文字"></nut-grid-item>
-  <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid :column-num="3" icon-color="#fa2c19">
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" icon-color="#478EF2" icon-size="40" text="文字"></nut-grid-item>
+    <nut-grid-item icon="dongdong" text="文字"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 页面导航
 
-``` html
-<nut-grid :column-num="2">
-  <nut-grid-item icon="home" text="路由跳转 ’/‘ " to="/"></nut-grid-item>
-  <nut-grid-item icon="search" text="URL 跳转" url="https://jd.com"></nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid :column-num="2">
+    <nut-grid-item icon="home" text="路由跳转 ’/‘ " to="/"></nut-grid-item>
+    <nut-grid-item icon="search" text="URL 跳转" url="https://jd.com"></nut-grid-item>
+  </nut-grid>
+</template>
 ```
+:::
 
 ### 自定义内容
 
-``` html
-<nut-grid :border="false">
-  <nut-grid-item v-for="i in 4" :key="i">
-    <nut-avatar
-      size="large"
-      icon="https://img12.360buyimg.com/imagetools/jfs/t1/143702/31/16654/116794/5fc6f541Edebf8a57/4138097748889987.png"
-    />
-  </nut-grid-item>
-</nut-grid>
+:::demo
+```html
+<template>
+  <nut-grid :border="false">
+    <nut-grid-item v-for="i in 4" :key="i">
+      <nut-avatar
+        size="large"
+        icon="https://img12.360buyimg.com/imagetools/jfs/t1/143702/31/16654/116794/5fc6f541Edebf8a57/4138097748889987.png"
+      />
+    </nut-grid-item>
+  </nut-grid>
+</template>
 ```
-
+:::
+## API
 ### Grid Props
 
 | 参数          | 说明                                      | 类型                    | 默认值      |
@@ -142,7 +178,7 @@ app.use(GridItem);
 | 参数                  | 说明                                                                                     | 类型               | 默认值      |
 |----------------------|-----------------------------------------------------------------------------------------|--------------------|------------|
 | text                 | 文字                                                                                     | string             | -          |
-| icon                 | [图标名称](#/icon) 或图片链接                                                              | string             | -          |
+| icon                 | [图标名称](#/zh-CN/component/icon) 或图片链接                                                              | string             | -          |
 | icon-size            | 图标大小，如 `20px` `2em` `2rem`                                                          | number \| string   | `28px`     |
 | icon-color           | 图标颜色                                                                                  | string            | -           |
 | url `小程序不支持`     | 点击后跳转的链接地址                                                                        | string            | -           |
@@ -157,7 +193,7 @@ app.use(GridItem);
 | icon                  | 自定义图标            |
 | text                  | 自定义文字            |
 
-### GridItem Event
+### GridItem Events
 
 | 事件名                 | 说明                   | 回调参数               |
 |-----------------------|-----------------------|-----------------------|

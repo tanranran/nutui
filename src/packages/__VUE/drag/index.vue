@@ -12,8 +12,8 @@
 
 <script lang="ts">
 import { onMounted, onDeactivated, onActivated, reactive, ref, computed } from 'vue';
-import { createComponent } from '../../utils/create';
-import requestAniFrame from '../../utils/raf';
+import { createComponent } from '@/packages/utils/create';
+import requestAniFrame from '@/packages/utils/raf';
 const { componentName, create } = createComponent('drag');
 export default create({
   props: {
@@ -37,7 +37,7 @@ export default create({
       }
     }
   },
-  setup(props, { emit }) {
+  setup(props) {
     const myDrag = ref();
     const state = reactive({
       keepAlive: false,
@@ -71,8 +71,8 @@ export default create({
       const domElem = document.documentElement;
       state.elWidth = myDrag.value.offsetWidth;
       state.elHeight = myDrag.value.offsetHeight;
-      state.screenWidth = domElem.clientWidth;
-      state.screenHeight = domElem.clientHeight;
+      state.screenWidth = domElem.clientWidth || 375;
+      state.screenHeight = domElem.clientHeight || 667;
     }
 
     function goLeft(target: HTMLElement) {
@@ -185,9 +185,9 @@ export default create({
     });
     onDeactivated(() => {
       state.keepAlive = true;
-      (myDrag as any).removeEventListener('touchstart', touchStart);
-      (myDrag as any).removeEventListener('touchmove', touchMove);
-      (myDrag as any).removeEventListener('touchend', touchEnd);
+      myDrag.value.removeEventListener('touchstart', touchStart);
+      myDrag.value.removeEventListener('touchmove', touchMove);
+      myDrag.value.removeEventListener('touchend', touchEnd);
     });
     return {
       classes,

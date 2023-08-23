@@ -2,50 +2,62 @@
 
 ### 介绍
 
-常用于单元格左滑删除等手势操作
+常用于单元格左右滑删除等手势操作
 
 ### 安装
 
-``` javascript
+```javascript
 import { createApp } from 'vue';
 //vue
-import { Swipe } from '@nutui/nutui';
+import { Swipe,Cell,Button } from '@nutui/nutui';
 //taro
-import { Swipe } from '@nutui/nutui-taro';
+import { Swipe,Cell,Button } from '@nutui/nutui-taro';
 
 const app = createApp();
 app.use(Swipe);
+app.use(Cell);
+app.use(Button);
 ```
 
-## 代码演示
 
 ### 基础用法
 
-``` html
+:::demo
+```html
+<template>
 <nut-swipe>
     <nut-cell round-radius="0" desc="左滑删除" />
     <template #right>
         <nut-button shape="square" style="height:100%" type="danger">删除</nut-button>
     </template>
 </nut-swipe>
+</template>
 ```
+:::
 
 
 ### 禁止滑动
 
-``` html
+
+:::demo
+```html
+<template>
 <nut-swipe disabled>
     <nut-cell round-radius="0" desc="禁止滑动" />
     <template #right>
         <nut-button shape="square" style="height:100%" type="danger">删除</nut-button>
     </template>
 </nut-swipe>
+</template>
 ```
-
+:::
 
 ### 左右滑动
 
-``` html
+
+:::demo
+```html
+<template>
 <nut-swipe>
     <template #left>
         <nut-button shape="square" style="height:100%" type="success">选择</nut-button>
@@ -56,12 +68,17 @@ app.use(Swipe);
         <nut-button shape="square" style="height:100%" type="info">收藏</nut-button>
     </template>
 </nut-swipe>
+</template>
 ```
-
+:::
 
 ### 异步控制
 
-``` html
+按需加载方式需要单独引入`switch`组件
+
+:::demo
+```html
+<template>
 <nut-swipe ref="refSwipe" @open="open" @close="close">
     <nut-cell title="异步打开关闭">
     <template v-slot:link>
@@ -72,8 +89,10 @@ app.use(Swipe);
         <nut-button shape="square" style="height:100%" type="danger">删除</nut-button>
     </template>
 </nut-swipe>
-```
-``` typescript
+</template>
+<script lang="ts">
+import { ref } from 'vue';
+export default {
     setup() {
         const refSwipe = ref<HTMLElement>();
         const checked = ref(false);
@@ -93,11 +112,18 @@ app.use(Swipe);
         };
         return { checked, changSwitch, refSwipe, open, close };
     }
+}
+</script>
 ```
+:::
 
 ### 自定义
 
-``` html
+按需加载方式需要单独引入`inputnumber`组件
+
+:::demo
+```html
+<template>
 <nut-swipe>
     <template #left>
         <nut-button shape="square" style="height:100%" type="success">选择</nut-button>
@@ -112,17 +138,20 @@ app.use(Swipe);
         <nut-button shape="square" style="height:100%" type="info">收藏</nut-button>
     </template>
 </nut-swipe>
-```
-
-``` typescript
+</template>
+<script lang="ts">
+import { ref } from 'vue';
+export default {
     setup() {
         const number = ref(0);
         return { number };
     }
+}
+</script>
 ```
+:::
 
-
-
+## API
 ### Props
 
 | 参数                     | 说明                 | 类型    | 默认值 |
@@ -147,7 +176,7 @@ app.use(Swipe);
 | right   | 右侧滑动内容 |
 
 ### 方法
-通过 ref 可以获取到 Swipe 实例并调用实例方法。
+通过 [ref](https://vuejs.org/guide/essentials/template-refs.html) 可以获取到 Swipe 实例并调用实例方法。
 
 | 方法名 | 说明             | 参数          |
 |--------|------------------|---------------|

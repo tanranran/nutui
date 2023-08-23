@@ -10,6 +10,7 @@
             <nut-icon
               v-if="titleIcon"
               :name="titleIcon"
+              v-bind="$attrs"
               :size="titleIconSize"
               :color="titleIconColor"
               :class="[titleIconPosition == 'left' ? 'titleIconLeft' : 'titleIconRight']"
@@ -28,14 +29,20 @@
       <nut-icon
         v-if="icon"
         :name="icon"
+        v-bind="$attrs"
         :size="iconSize"
         :color="iconColor"
         :class="['collapse-icon', { 'col-expanded': openExpanded }, { 'collapse-icon-disabled': disabled }]"
         :style="iconStyle"
       ></nut-icon>
     </view>
+    <view v-if="$slots.extraRender" class="collapse-extraWrapper">
+      <div class="collapse-extraRender">
+        <slot name="extraRender"></slot>
+      </div>
+    </view>
     <view class="collapse-wrapper" ref="wrapperRef">
-      <view class="collapse-content" ref="contentRef">
+      <view :class="['collapse-content', emptyContent]" ref="contentRef">
         <slot></slot>
       </view>
     </view>
@@ -54,7 +61,7 @@ import {
   getCurrentInstance,
   ComponentInternalInstance
 } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { create, componentName } = createComponent('collapse-item');
 
 export default create({
@@ -80,7 +87,7 @@ export default create({
       type: Object
     }
   },
-  setup(props) {
+  setup(props, ctx: any) {
     const collapse: any = inject('collapseParent');
     const parent: any = reactive(collapse);
     const classes = computed(() => {
@@ -91,6 +98,7 @@ export default create({
         [`${prefixCls}-icon`]: parent.props.icon
       };
     });
+
     const relation = (child: ComponentInternalInstance): void => {
       if (child.proxy) {
         parent.children.push(child.proxy);
@@ -104,8 +112,8 @@ export default create({
       openExpanded: false,
       // classDirection: 'right',
       iconStyle: {
-        transform: 'rotate(0deg)',
-        marginTop: parent.props.iconHeght ? '-' + parent.props.iconHeght / 2 + 'px' : '-10px'
+        transform: 'translateY(-50%) rotate(0deg)'
+        // marginTop: parent.props.iconHeght ? '-' + parent.props.iconHeght / 2 + 'px' : '-10px'
       }
     });
 
@@ -127,7 +135,9 @@ export default create({
     // 清除 willChange 减少性能浪费
     const onTransitionEnd = () => {
       const wrapperRefEle: any = document.getElementsByClassName('collapse-wrapper')[0];
-      wrapperRefEle.style.willChange = 'auto';
+      if (wrapperRefEle) {
+        wrapperRefEle.style.willChange = 'auto';
+      }
 
       // const query = wx.createSelectorQuery();
       // query.select('#productServe').boundingClientRect();
@@ -140,15 +150,16 @@ export default create({
       if (!wrapperRefEle || !contentRefEle) {
         return;
       }
-      const offsetHeight = contentRefEle.offsetHeight;
+
+      const offsetHeight = contentRefEle.offsetHeight || 'auto';
       if (offsetHeight) {
         const contentHeight = `${offsetHeight}px`;
         wrapperRefEle.style.willChange = 'height';
         wrapperRefEle.style.height = !proxyData.openExpanded ? 0 : contentHeight;
         if (parent.props.icon && !proxyData.openExpanded) {
-          proxyData.iconStyle['transform'] = 'rotate(0deg)';
+          proxyData.iconStyle['transform'] = 'translateY(-50%) rotate(0deg)';
         } else {
-          proxyData.iconStyle['transform'] = 'rotate(' + parent.props.rotate + 'deg)';
+          proxyData.iconStyle['transform'] = 'translateY(-50%) rotate(' + parent.props.rotate + 'deg)';
         }
       }
       if (!proxyData.openExpanded) {
@@ -164,27 +175,32 @@ export default create({
     const defaultOpen = () => {
       open();
       if (parent.props.icon) {
-        proxyData['iconStyle']['transform'] = 'rotate(' + parent.props.rotate + 'deg)';
+        proxyData['iconStyle']['transform'] = 'translateY(-50%) rotate(' + parent.props.rotate + 'deg)';
       }
     };
 
     const currentName = computed(() => props.name);
     const toggleOpen = () => {
       if (parent.props.accordion) {
-        parent.children.forEach((item: any, index: number) => {
-          if (currentName.value == item.name) {
-            item.changeOpen(!item.openExpanded);
-          } else {
-            item.changeOpen(false);
-            item.animation();
-          }
-        });
+        // parent.children.forEach((item: any, index: number) => {
+        //   if (currentName.value == item.name) {
+        //     item.changeOpen(!item.openExpanded);
+        //   } else {
+        //     item.changeOpen(false);
+        //     item.animation();
+        //   }
+        // });
         nextTick(() => {
-          parent.changeVal(currentName.value);
-          animation();
+          if (currentName.value == parent.props.active) {
+            open();
+          } else {
+            parent.changeVal(currentName.value);
+          }
+          // parent.changeVal(currentName.value);
+          // animation();
         });
       } else {
-        parent.changeValAry(props.name);
+        parent.changeValAry(String(props.name));
         open();
       }
     };
@@ -206,21 +222,50 @@ export default create({
       }
     });
 
-    onMounted(() => {
+    // watch(
+    //   () => ctx?.slots?.default?.(),
+    //   (val) => {
+    //     setTimeout(() => {
+    //       animation();
+    //     }, 300);
+    //   },
+    //   {
+    //     deep: true,
+    //     immediate: true
+    //   }
+    // );
+
+    const init = () => {
       const { name } = props;
       const active = parent && parent.props.active;
-
-      if (typeof active == 'number' || typeof active == 'string') {
-        if (name == active) {
-          defaultOpen();
+      nextTick(() => {
+        if (typeof active == 'number' || typeof active == 'string') {
+          if (name == active) {
+            defaultOpen();
+          }
+        } else if (Object.values(active) instanceof Array) {
+          const f = Object.values(active).filter((item) => item == name);
+          if (f.length > 0) {
+            defaultOpen();
+          }
         }
-      } else if (Object.values(active) instanceof Array) {
-        const f = Object.values(active).filter((item) => item == name);
-        if (f.length > 0) {
-          defaultOpen();
-        }
+      });
+    };
+    onMounted(() => {
+      const MutationObserver: any =
+        window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+      var observer = new MutationObserver(() => {
+        animation();
+      });
+      const ele = document.getElementsByClassName('collapse-wrapper')[0];
+      if (ele) {
+        observer.observe(ele, {
+          childList: true,
+          subtree: true
+        });
       }
 
+      init();
       // proxyData.classDirection = parent.props.expandIconPosition;
       // if (parent.props.icon && parent.props.icon != 'none') {
       //   proxyData.iconStyle['background-image'] =
@@ -233,9 +278,17 @@ export default create({
       //   proxyData.iconStyle['height'] = parent.props.iconHeight;
       // }
     });
-
+    const emptyContent = computed(() => {
+      let ele = contentRef.value;
+      let _class = '';
+      if (!ele?.innerText) {
+        _class = 'empty';
+      }
+      return _class;
+    });
     return {
       classes,
+      emptyContent,
       ...toRefs(proxyData),
       ...toRefs(parent.props),
       ...toRefs(titleIconStyle),

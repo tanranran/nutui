@@ -1,84 +1,84 @@
 <template>
-  <picker
-    :mode="mode"
-    :range="range"
-    @change="onChange"
-    @columnchange="onColumnChange"
-    :value="value"
-  >
-    <slot></slot>
-  </picker>
+  <view :class="classes">
+    <nut-popup
+      position="bottom"
+      v-model:visible="show"
+      :teleport="teleport"
+      :lock-scroll="lockScroll"
+      :close-on-click-overlay="closeOnClickOverlay"
+      @close="close"
+      :round="true"
+      :safeAreaInsetBottom="safeAreaInsetBottom"
+      :destroyOnClose="destroyOnClose"
+    >
+      <view class="nut-picker__bar">
+        <view class="nut-picker__cancel nut-picker__left nut-picker__button" @click="close" v-if="showCancelText">{{
+          cancelText || translate('cancel')
+        }}</view>
+        <view class="nut-picker__title"> {{ title }}</view>
+        <view
+          class="nut-picker__confirm nut-picker__right nut-picker__button"
+          @click="confirmHandler()"
+          v-if="showOkText"
+          >{{ okText || translate('confirm') }}</view
+        >
+      </view>
+      <slot name="top"></slot>
+
+      <!-- Taro 下转换成 微信小程序 -->
+      <picker-view
+        v-if="ENV != ENV_TYPE.WEB"
+        indicator-style="height: 34px;"
+        :value="defaultIndexes"
+        style="width: 100%; height: 252px"
+        v-bind="$attrs"
+        :immediateChange="true"
+        @change="tileChange"
+        @pickstart="handlePickstart"
+        @pickend="handlePickend"
+      >
+        <picker-view-column v-for="(column, columnIndex) in columnsList" :key="columnIndex">
+          <view
+            class="nut-picker-roller-item-tarotile"
+            v-for="(item, index) in column"
+            :key="item.value ? item.value : index"
+          >
+            {{ item.text }}
+          </view>
+        </picker-view-column>
+      </picker-view>
+
+      <!-- Taro 下转换成 H5 -->
+      <view class="nut-picker__column" v-if="ENV == ENV_TYPE.WEB">
+        <view class="nut-picker__columnitem" v-for="(column, columnIndex) in columnsList" :key="columnIndex">
+          <nut-picker-column
+            :ref="swipeRef"
+            :itemShow="show"
+            :column="column"
+            :readonly="readonly"
+            :columnsType="columnsType"
+            :value="defaultValues[columnIndex]"
+            :threeDimensional="false"
+            :swipeDuration="swipeDuration"
+            @change="
+              (option) => {
+                changeHandler(columnIndex, option);
+              }
+            "
+          ></nut-picker-column>
+        </view>
+      </view>
+      <slot name="default"></slot>
+    </nut-popup>
+  </view>
 </template>
-
 <script lang="ts">
-import { onUpdated, ref, watch } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
+import { componentWeb, componentWeapp } from './common';
+import Taro from '@tarojs/taro';
 const { create } = createComponent('picker');
-import { commonProps } from './commonProps';
-export default create({
-  props: {
-    mode: {
-      type: String,
-      default: 'selector'
-    },
-    ...commonProps
-  },
-  emits: ['confirm'],
-  setup(props, { emit }) {
-    let value = ref<any>([]);
-    let range = ref<any>([]);
 
-    onUpdated(() => {
-      console.log('updated', props.listData);
-    });
+const component: any = Taro.getEnv() == Taro.ENV_TYPE.WEB ? componentWeb : componentWeapp;
 
-    const onChange = (e: any) => {
-      let ret;
-
-      if (props.mode === 'selector') {
-        ret = props.listData[e.detail.value];
-      } else if (props.mode === 'multiSelector') {
-        ret = range.value
-          ?.map((item: any, idx: number) => item[e.detail.value[idx]])
-          .filter((res: any) => res);
-      }
-      emit('confirm', e.detail.value, ret);
-    };
-
-    watch(
-      props.listData,
-      (val: any) => {
-        try {
-          if (val.length) {
-            value.value = [];
-            range.value = [];
-            if (props.mode === 'selector') {
-              range.value = props.listData;
-            } else if (props.mode === 'multiSelector') {
-              val.forEach((item: any) => {
-                value.value.push(item.defaultIndex);
-                range.value.push(item.values);
-              });
-            }
-          }
-        } catch (error) {
-          console.log('listData参数格式错误', error);
-        }
-      },
-      { immediate: true, deep: true }
-    );
-
-    const onColumnChange = (e: any) => {
-      console.log('修改的列为', e.detail.column, '，值为', e.detail.value);
-    };
-
-    return {
-      confirm,
-      onChange,
-      value,
-      range,
-      onColumnChange
-    };
-  }
-});
+export default create(component);
 </script>

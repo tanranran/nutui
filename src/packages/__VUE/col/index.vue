@@ -5,7 +5,7 @@
 </template>
 <script lang="ts">
 import { computed, inject } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('col');
 
 export default create({
@@ -19,6 +19,7 @@ export default create({
       default: '0'
     }
   },
+  emits: [],
   setup(props) {
     const prefixCls = componentName;
     const gutter = inject('gutter') as number;

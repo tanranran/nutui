@@ -36,11 +36,25 @@
       <nut-cell>
         <nut-button size="small" style="margin-right: 10px" @click="dynamicForm.methods.add">添加</nut-button>
         <nut-button size="small" style="margin-right: 10px" @click="dynamicForm.methods.remove">删除</nut-button>
-        <nut-button type="primary" size="small" @click="dynamicForm.methods.submit">提交</nut-button>
+        <nut-button type="primary" style="margin-right: 10px" size="small" @click="dynamicForm.methods.submit"
+          >提交
+        </nut-button>
+        <nut-button size="small" @click="dynamicForm.methods.reset">重置提示状态</nut-button>
       </nut-cell>
     </nut-form>
     <h2>表单校验</h2>
-    <nut-form :model-value="formData" ref="ruleForm">
+    <nut-form
+      :model-value="formData"
+      :rules="{
+        name: [
+          {
+            message: 'Name should be at least two characters',
+            validator: nameLengthValidator
+          }
+        ]
+      }"
+      ref="ruleForm"
+    >
       <nut-form-item label="姓名" prop="name" required :rules="[{ required: true, message: '请填写姓名' }]">
         <input
           class="nut-input-text"
@@ -57,6 +71,7 @@
         :rules="[
           { required: true, message: '请填写年龄' },
           { validator: customValidator, message: '必须输入数字' },
+          { validator: customRulePropValidator, message: '必须输入数字', reg: /^\d+$/ },
           { regex: /^(\d{1,2}|1\d{2}|200)$/, message: '必须输入0-200区间' }
         ]"
       >
@@ -116,7 +131,13 @@
         <nut-range hidden-tag v-model="formData2.range"></nut-range>
       </nut-form-item>
       <nut-form-item label="文件上传">
-        <nut-uploader url="http://服务地址" v-model:file-list="formData2.defaultFileList" maximum="3" multiple>
+        <nut-uploader
+          url="http://服务地址"
+          accept="image/*"
+          v-model:file-list="formData2.defaultFileList"
+          maximum="3"
+          multiple
+        >
         </nut-uploader>
       </nut-form-item>
       <nut-form-item label="地址">
@@ -145,6 +166,7 @@
 
 <script lang="ts">
 import { reactive, ref } from 'vue';
+import { FormItemRuleWithoutValidator } from '@/packages/__VUE/formitem/types';
 export default {
   props: {},
   setup() {
@@ -174,6 +196,9 @@ export default {
               console.log('error submit!!', errors);
             }
           });
+        },
+        reset() {
+          dynamicRefForm.value.reset();
         },
         remove() {
           dynamicForm.state.tels.splice(dynamicForm.state.tels.length - 1, 1);
@@ -283,6 +308,10 @@ export default {
     };
     // 函数校验
     const customValidator = (val: string) => /^\d+$/.test(val);
+    const customRulePropValidator = (val: string, rule: FormItemRuleWithoutValidator) => {
+      return (rule?.reg as RegExp).test(val);
+    };
+    const nameLengthValidator = (val: string) => val?.length >= 2;
     // Promise 异步校验
     const asyncValidator = (val: string) => {
       return new Promise((resolve) => {
@@ -298,6 +327,8 @@ export default {
       formData,
       validate,
       customValidator,
+      customRulePropValidator,
+      nameLengthValidator,
       asyncValidator,
       customBlurValidate,
       submit,

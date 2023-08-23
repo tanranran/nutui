@@ -1,7 +1,15 @@
 <template>
-  <view class="nut-range-container">
+  <view :class="containerClasses">
     <view class="min" v-if="!hiddenRange">{{ +min }}</view>
     <view ref="root" :id="'root-' + refRandomId" :style="wrapperStyle" :class="classes" @click.stop="onClick">
+      <view class="nut-range-mark">
+        <template v-if="marksList.length > 0">
+          <span v-for="marks in marksList" :key="marks" :class="markClassName(marks)" :style="marksStyle(marks)">
+            {{ marks }}
+            <span class="nut-range-tick" :style="tickStyle(marks)"></span>
+          </span>
+        </template>
+      </view>
       <view class="nut-range-bar" :style="barStyle">
         <template v-if="range">
           <view
@@ -12,6 +20,7 @@
               'nut-range-button-wrapper-left': index == 0,
               'nut-range-button-wrapper-right': index == 1
             }"
+            :catch-move="true"
             :tabindex="disabled ? -1 : 0"
             :aria-valuemin="+min"
             :aria-valuenow="curValue(index)"
@@ -46,6 +55,7 @@
             :aria-valuenow="curValue()"
             :aria-valuemax="+max"
             aria-orientation="horizontal"
+            :catch-move="true"
             @touchstart.stop.prevent="
               (e) => {
                 onTouchStart(e);
@@ -58,7 +68,7 @@
           >
             <slot v-if="$slots.button" name="button"></slot>
             <view class="nut-range-button" v-else :style="buttonStyle">
-              <view class="number" v-if="!hiddenTag">{{ curValue(index) }}</view>
+              <view class="number" v-if="!hiddenTag">{{ curValue() }}</view>
             </view>
           </view>
         </template>
@@ -69,13 +79,11 @@
 </template>
 <script lang="ts">
 import Taro from '@tarojs/taro';
-import { ref, toRefs, computed, PropType, CSSProperties, onUpdated } from 'vue';
-import { createComponent } from '../../utils/create';
-import { useTouch } from '../../utils/useTouch';
-import { useTaroRect } from '../../utils/useTaroRect';
+import { ref, toRefs, computed, PropType, CSSProperties } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+import { useTouch } from '@/packages/utils/useTouch';
+import { useTaroRect } from '@/packages/utils/useTaroRect';
 const { componentName, create } = createComponent('range');
-
-type SliderValue = number | number[];
 
 export default create({
   props: {
@@ -87,6 +95,14 @@ export default create({
     activeColor: String,
     inactiveColor: String,
     buttonColor: String,
+    vertical: {
+      type: Boolean,
+      default: false
+    },
+    marks: {
+      type: Object,
+      default: {}
+    },
     hiddenRange: {
       type: Boolean,
       default: false
@@ -108,7 +124,7 @@ export default create({
       default: 1
     },
     modelValue: {
-      type: [Number, Array] as PropType<SliderValue>,
+      type: [Number, Array] as PropType<import('./type').SliderValue>,
       default: 0
     }
   },
@@ -117,13 +133,23 @@ export default create({
 
   setup(props, { emit, slots }) {
     const buttonIndex = ref(0);
-    let startValue: SliderValue;
-    let currentValue: SliderValue;
+    let startValue: import('./type').SliderValue;
+    let currentValue: import('./type').SliderValue;
 
     const root = ref<HTMLElement>();
     const dragStatus = ref<'start' | 'draging' | ''>();
     const touch = useTouch();
 
+    const marksList = computed(() => {
+      const { marks, max, min } = props;
+      const marksKeys = Object.keys(marks);
+      const range = Number(max) - Number(min);
+      const list = marksKeys
+        .map(parseFloat)
+        .sort((a, b) => a - b)
+        .filter((point) => point >= min && point <= max);
+      return list;
+    });
     const scope = computed(() => Number(props.max) - Number(props.min));
 
     const classes = computed(() => {
@@ -131,10 +157,17 @@ export default create({
       return {
         [prefixCls]: true,
         [`${prefixCls}-disabled`]: props.disabled,
+        [`${prefixCls}-vertical`]: props.vertical,
         [`${prefixCls}-show-number`]: !props.hiddenRange
       };
     });
-
+    const containerClasses = computed(() => {
+      const prefixCls = 'nut-range-container';
+      return {
+        [prefixCls]: true,
+        [`${prefixCls}-vertical`]: props.vertical
+      };
+    });
     const wrapperStyle = computed(() => {
       return {
         background: props.inactiveColor
@@ -166,21 +199,75 @@ export default create({
     };
 
     const barStyle = computed<CSSProperties>(() => {
-      return {
-        width: calcMainAxis(),
-        left: calcOffset(),
-        background: props.activeColor,
-        transition: dragStatus.value ? 'none' : undefined
-      };
+      if (props.vertical) {
+        return {
+          height: calcMainAxis(),
+          top: calcOffset(),
+          background: props.activeColor,
+          transition: dragStatus.value ? 'none' : undefined
+        };
+      } else {
+        return {
+          width: calcMainAxis(),
+          left: calcOffset(),
+          background: props.activeColor,
+          transition: dragStatus.value ? 'none' : undefined
+        };
+      }
     });
+    const markClassName = (mark: any) => {
+      const classPrefix = 'nut-range-mark';
+      const { modelValue, max, min } = props;
+      let lowerBound = Number(min);
+      let upperBound: number | number[] = Number(max);
+      if (props.range) {
+        const [left, right] = modelValue as any;
+        lowerBound = left;
+        upperBound = right;
+      } else {
+        upperBound = modelValue;
+      }
+      let isActive = mark <= upperBound && mark >= lowerBound;
+      return {
+        [`${classPrefix}-text`]: true,
+        [`${classPrefix}-text-active`]: isActive
+      };
+    };
+    const marksStyle = (mark: number) => {
+      const { max, min, vertical } = props;
+      let style: any = {
+        left: `${((mark - Number(min)) / scope.value) * 100}%`
+      };
+      if (vertical) {
+        style = {
+          top: `${((mark - Number(min)) / scope.value) * 100}%`
+        };
+      }
+      return style;
+    };
+    const tickStyle = (mark: number) => {
+      const { modelValue, max, min } = props;
+      let lowerBound = Number(min);
+      let upperBound = Number(max);
+      if (props.range) {
+        const [left, right] = modelValue as any;
+        lowerBound = left;
+        upperBound = right;
+      }
+      let isActive = mark <= upperBound && mark >= lowerBound;
+      let style: any = {
+        background: !isActive ? props.inactiveColor : props.activeColor
+      };
 
+      return style;
+    };
     const format = (value: number) => {
       const { min, max, step } = props;
       value = Math.max(+min, Math.min(value, +max));
       return Math.round(value / +step) * +step;
     };
 
-    const isSameValue = (newValue: SliderValue, oldValue: SliderValue) =>
+    const isSameValue = (newValue: import('./type').SliderValue, oldValue: import('./type').SliderValue) =>
       JSON.stringify(newValue) === JSON.stringify(oldValue);
 
     const handleOverlap = (value: number[]) => {
@@ -190,7 +277,7 @@ export default create({
       return value;
     };
 
-    const updateValue = (value: SliderValue, end?: boolean) => {
+    const updateValue = (value: import('./type').SliderValue, end?: boolean) => {
       if (isRange(value)) {
         value = handleOverlap(value).map(format);
       } else {
@@ -206,15 +293,27 @@ export default create({
       }
     };
 
-    const onClick = async (event: MouseEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onClick = async (event: any) => {
       if (props.disabled) {
         return;
       }
-
       const { min, modelValue } = props;
       const rect = await useTaroRect(root, Taro);
-      const delta = (event as any).touches[0].clientX - rect.left;
-      const total = rect.width;
+      let clientX, clientY;
+      if (Taro.getEnv() === Taro.ENV_TYPE.WEB) {
+        clientX = event.clientX;
+        clientY = event.clientY;
+      } else {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+      }
+      let delta = clientX - rect.left;
+      let total = rect.width;
+      if (props.vertical) {
+        delta = clientY - rect.top;
+        total = rect.height;
+      }
       const value = Number(min) + (delta / total) * scope.value;
       if (isRange(modelValue)) {
         const [left, right] = modelValue;
@@ -244,6 +343,8 @@ export default create({
       }
 
       dragStatus.value = 'start';
+      event.stopPropagation();
+      event.preventDefault();
     };
 
     const onTouchMove = async (event: TouchEvent) => {
@@ -259,22 +360,25 @@ export default create({
       dragStatus.value = 'draging';
 
       const rect = await useTaroRect(root, Taro);
-      const delta = touch.deltaX.value;
-      const total = rect.width;
-      const diff = (delta / total) * scope.value;
-
+      let delta = touch.deltaX.value;
+      let total = rect.width;
+      let diff = (delta / total) * scope.value;
+      if (props.vertical) {
+        delta = touch.deltaY.value;
+        total = rect.height;
+        diff = (delta / total) * scope.value;
+      }
       if (isRange(startValue)) {
         (currentValue as number[])[buttonIndex.value] = startValue[buttonIndex.value] + diff;
       } else {
         currentValue = startValue + diff;
       }
       updateValue(currentValue);
-
       event.stopPropagation();
       event.preventDefault();
     };
 
-    const onTouchEnd = () => {
+    const onTouchEnd = (event: TouchEvent) => {
       if (props.disabled) {
         return;
       }
@@ -283,15 +387,15 @@ export default create({
         emit('drag-end');
       }
       dragStatus.value = '';
+      event.stopPropagation();
+      event.preventDefault();
     };
 
     const curValue = (idx?: number) => {
       const value = typeof idx === 'number' ? (props.modelValue as number[])[idx] : props.modelValue;
       return value;
     };
-
     const refRandomId = Math.random().toString(36).slice(-8);
-
     return {
       root,
       classes,
@@ -305,6 +409,11 @@ export default create({
       barStyle,
       curValue,
       buttonIndex,
+      containerClasses,
+      markClassName,
+      marksStyle,
+      marksList,
+      tickStyle,
       refRandomId
     };
   }

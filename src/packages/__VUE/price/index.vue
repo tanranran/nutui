@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { computed } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('price');
 
 export default create({
@@ -42,7 +42,7 @@ export default create({
       default: '&yen;'
     },
     decimalDigits: {
-      type: Number,
+      type: [Number, String],
       default: 2
     },
     thousands: {
@@ -56,13 +56,18 @@ export default create({
     size: {
       type: String,
       default: 'large'
+    },
+    strikeThrough: {
+      type: Boolean,
+      default: false
     }
   },
 
   setup(props) {
     const classes = computed(() => {
       return {
-        [componentName]: true
+        [componentName]: true,
+        [`${componentName}--strike`]: props.strikeThrough
       };
     });
     const showSymbol = computed(() => {

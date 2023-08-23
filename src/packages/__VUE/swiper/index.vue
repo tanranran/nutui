@@ -7,27 +7,16 @@
     @touchend="onTouchEnd"
     @touchcancel="onTouchEnd"
   >
-    <view
-      :class="{
-        [`${componentName}-inner`]: true,
-        [`${componentName}-vertical`]: isVertical
-      }"
-      :style="state.style"
-    >
+    <view :class="classesInner" :style="state.style">
       <slot></slot>
     </view>
     <slot name="page"></slot>
-    <view
-      :class="{
-        [`${componentName}-pagination`]: true,
-        [`${componentName}-pagination-vertical`]: isVertical
-      }"
-      v-if="paginationVisible && !slots.page"
-    >
+    <view :class="classesPagination" v-if="paginationVisible && !$slots.page">
       <i
         :style="{
           backgroundColor: activePagination === index ? paginationColor : '#ddd'
         }"
+        :class="{ active: activePagination === index }"
         v-for="(item, index) in state.children.length"
         :key="index"
       />
@@ -37,8 +26,6 @@
 
 <script lang="ts">
 import {
-  onMounted,
-  onActivated,
   onDeactivated,
   onBeforeUnmount,
   provide,
@@ -48,11 +35,14 @@ import {
   computed,
   nextTick,
   ref,
-  watch
+  watch,
+  VNode
 } from 'vue';
-import { createComponent } from '../../utils/create';
-import { useTouch } from './use-touch';
-import { useExpose } from '../../utils/useExpose/index';
+import { createComponent } from '@/packages/utils/create';
+import { useTouch } from '@/packages/utils/useTouch/index';
+import { useExpose } from '@/packages/utils/useExpose/index';
+import { clamp } from '@/packages/utils/util';
+import requestAniFrame from '@/packages/utils/raf';
 const { create, componentName } = createComponent('swiper');
 export default create({
   props: {
@@ -65,7 +55,7 @@ export default create({
       default: 0
     },
     direction: {
-      type: [String],
+      type: String,
       default: 'horizontal' //horizontal and vertical
     },
     paginationVisible: {
@@ -120,6 +110,7 @@ export default create({
       touchTime: 0,
       autoplayTimer: 0 as number | undefined,
       children: [] as ComponentPublicInstance[],
+      childrenVNode: [] as VNode[],
       style: {}
     });
 
@@ -134,12 +125,28 @@ export default create({
 
     const isVertical = computed(() => props.direction === 'vertical');
 
+    const classesInner = computed(() => {
+      const prefixCls = componentName;
+      return {
+        [`${prefixCls}-inner`]: true,
+        [`${prefixCls}-vertical`]: isVertical.value
+      };
+    });
+
+    const classesPagination = computed(() => {
+      const prefixCls = componentName;
+      return {
+        [`${prefixCls}-pagination`]: true,
+        [`${prefixCls}-pagination-vertical`]: isVertical.value
+      };
+    });
+
     const delTa = computed(() => {
-      return isVertical.value ? touch.state.deltaY : touch.state.deltaX;
+      return isVertical.value ? touch.deltaY.value : touch.deltaX.value;
     });
 
     const isCorrectDirection = computed(() => {
-      return touch.state.direction === props.direction;
+      return touch.direction.value === props.direction;
     });
 
     const childCount = computed(() => state.children.length);
@@ -156,37 +163,50 @@ export default create({
       return 0;
     });
 
-    const activePagination = computed(
-      () => (state.active + childCount.value) % childCount.value
-    );
+    const activePagination = computed(() => (state.active + childCount.value) % childCount.value);
 
     const getStyle = () => {
+      let offset = 0;
+      offset = state.offset;
       state.style = {
         transitionDuration: `${state.moving ? 0 : props.duration}ms`,
-        transform: `translate${isVertical.value ? 'Y' : 'X'}(${
-          state.offset
-        }px)`,
-        [isVertical.value ? 'height' : 'width']: `${
-          size.value * childCount.value
-        }px`,
-        [isVertical.value ? 'width' : 'height']: `${
-          isVertical.value ? state.width : state.height
-        }px`
+        transform: `translate${isVertical.value ? 'Y' : 'X'}(${offset}px)`,
+        [isVertical.value ? 'height' : 'width']: `${size.value * childCount.value}px`,
+        [isVertical.value ? 'width' : 'height']: `${isVertical.value ? state.width : state.height}px`
       };
     };
 
     const relation = (child: ComponentInternalInstance) => {
-      if (child.proxy) {
-        state.children.push(child.proxy);
+      let children = [] as VNode[];
+      const childrenVNodeLen = state.childrenVNode.length;
+      let slot = slots?.default?.() as VNode[];
+      slot = slot.filter((item: VNode) => item.children && Array.isArray(item.children));
+      slot.forEach((item: VNode) => {
+        children = children.concat(item.children as VNode[]);
+      });
+      if (!childrenVNodeLen) {
+        state.childrenVNode = children.slice();
+        child.proxy && state.children.push(child.proxy);
+      } else {
+        if (childrenVNodeLen > children.length) {
+          state.children = state.children.filter((item: ComponentPublicInstance) => child.proxy !== item);
+        } else if (childrenVNodeLen < children.length) {
+          for (let i = 0; i < childrenVNodeLen; i++) {
+            if ((children[i] as VNode).key !== (state.childrenVNode[i] as VNode).key) {
+              child.proxy && state.children.splice(i, 0, child.proxy);
+              child.vnode && state.childrenVNode.splice(i, 0, child.vnode);
+              break;
+            }
+          }
+          if (childrenVNodeLen !== children.length) {
+            child.proxy && state.children.push(child.proxy);
+            child.vnode && state.childrenVNode.push(child.vnode);
+          }
+        } else {
+          state.childrenVNode = children.slice();
+          child.proxy && state.children.push(child.proxy);
+        }
       }
-    };
-
-    const range = (num: number, min: number, max: number) => {
-      return Math.min(Math.max(num, min), max);
-    };
-
-    const requestFrame = (fn: FrameRequestCallback) => {
-      window.requestAnimationFrame.call(window, fn);
     };
 
     const getOffset = (active: number, offset = 0) => {
@@ -197,8 +217,10 @@ export default create({
 
       let targetOffset = offset - currentPosition;
       if (!props.loop) {
-        targetOffset = range(targetOffset, minOffset.value, 0);
+        targetOffset = clamp(targetOffset, minOffset.value, 0);
       }
+
+      // console.log(offset, currentPosition, targetOffset);
 
       return targetOffset;
     };
@@ -207,9 +229,9 @@ export default create({
       const { active } = state;
       if (pace) {
         if (props.loop) {
-          return range(active + pace, -1, childCount.value);
+          return clamp(active + pace, -1, childCount.value);
         }
-        return range(active + pace, 0, childCount.value - 1);
+        return clamp(active + pace, 0, childCount.value - 1);
       }
       return active;
     };
@@ -225,15 +247,11 @@ export default create({
       if (props.loop) {
         if (state.children[0] && targetOffset !== minOffset.value) {
           const rightBound = targetOffset < minOffset.value;
-          (state.children[0] as any).setOffset(
-            rightBound ? trackSize.value : 0
-          );
+          (state.children[0] as any).setOffset(rightBound ? trackSize.value : 0);
         }
         if (state.children[childCount.value - 1] && targetOffset !== 0) {
           const leftBound = targetOffset > 0;
-          (state.children[childCount.value - 1] as any).setOffset(
-            leftBound ? -trackSize.value : 0
-          );
+          (state.children[childCount.value - 1] as any).setOffset(leftBound ? -trackSize.value : 0);
         }
       }
 
@@ -262,34 +280,27 @@ export default create({
       clearTimeout(state.autoplayTimer);
     };
 
-    const prev = () => {
+    const jump = (pace: number) => {
       resettPosition();
       touch.reset();
 
-      requestFrame(() => {
-        requestFrame(() => {
+      requestAniFrame(() => {
+        requestAniFrame(() => {
           state.moving = false;
           move({
-            pace: -1,
+            pace,
             isEmit: true
           });
         });
       });
     };
 
-    const next = () => {
-      resettPosition();
-      touch.reset();
+    const prev = () => {
+      jump(-1);
+    };
 
-      requestFrame(() => {
-        requestFrame(() => {
-          state.moving = false;
-          move({
-            pace: 1,
-            isEmit: true
-          });
-        });
-      });
+    const next = () => {
+      jump(1);
     };
 
     const to = (index: number) => {
@@ -297,19 +308,17 @@ export default create({
 
       touch.reset();
 
-      requestFrame(() => {
-        requestFrame(() => {
-          state.moving = false;
-          let targetIndex;
-          if (props.loop && childCount.value === index) {
-            targetIndex = state.active === 0 ? 0 : index;
-          } else {
-            targetIndex = index % childCount.value;
-          }
-          move({
-            pace: targetIndex - state.active,
-            isEmit: true
-          });
+      requestAniFrame(() => {
+        state.moving = false;
+        let targetIndex;
+        if (props.loop && childCount.value === index) {
+          targetIndex = state.active === 0 ? 0 : index;
+        } else {
+          targetIndex = index % childCount.value;
+        }
+        move({
+          pace: targetIndex - state.active,
+          isEmit: true
         });
       });
     };
@@ -329,9 +338,7 @@ export default create({
       state.rect = container.value.getBoundingClientRect();
       active = Math.min(childCount.value - 1, active);
       state.width = props.width ? +props.width : (state.rect as DOMRect).width;
-      state.height = props.height
-        ? +props.height
-        : (state.rect as DOMRect).height;
+      state.height = props.height ? +props.height : (state.rect as DOMRect).height;
       state.active = active;
       state.offset = getOffset(state.active);
       state.moving = true;
@@ -364,21 +371,15 @@ export default create({
     const onTouchEnd = (e: TouchEvent) => {
       if (!props.touchable || !state.moving) return;
       const speed = delTa.value / (Date.now() - state.touchTime);
-      const isShouldMove =
-        Math.abs(speed) > 0.3 ||
-        Math.abs(delTa.value) > +(size.value / 2).toFixed(2);
+      const isShouldMove = Math.abs(speed) > 0.3 || Math.abs(delTa.value) > +(size.value / 2).toFixed(2);
 
       if (isShouldMove && isCorrectDirection.value) {
         let pace = 0;
-        const offset = isVertical.value
-          ? touch.state.offsetY
-          : touch.state.offsetX;
+        const offset = isVertical.value ? touch.offsetY.value : touch.offsetX.value;
         if (props.loop) {
           pace = offset > 0 ? (delTa.value > 0 ? -1 : 1) : 0;
         } else {
-          pace = -Math[delTa.value > 0 ? 'ceil' : 'floor'](
-            delTa.value / size.value
-          );
+          pace = -Math[delTa.value > 0 ? 'ceil' : 'floor'](delTa.value / size.value);
         }
         move({
           pace,
@@ -404,18 +405,6 @@ export default create({
       to
     });
 
-    onMounted(() => {
-      nextTick(() => {
-        init();
-      });
-    });
-
-    onActivated(() => {
-      nextTick(() => {
-        init();
-      });
-    });
-
     onDeactivated(() => {
       stopAutoPlay();
     });
@@ -437,7 +426,7 @@ export default create({
       () => state.children.length,
       () => {
         nextTick(() => {
-          init(state.active);
+          init();
         });
       }
     );
@@ -452,10 +441,9 @@ export default create({
     return {
       state,
       classes,
+      classesInner,
+      classesPagination,
       container,
-      componentName,
-      isVertical,
-      slots,
       activePagination,
       onTouchStart,
       onTouchMove,

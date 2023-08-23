@@ -5,7 +5,7 @@
 </template>
 <script lang="ts">
 import { provide } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('row');
 
 export default create({
@@ -26,31 +26,27 @@ export default create({
       type: String,
       default: 'flex-start'
     },
-    wrap: {
+    flexWrap: {
       type: String,
       default: 'nowrap'
     }
   },
+  emits: [],
   setup(props) {
     const prefixCls = componentName;
     provide('gutter', props.gutter);
     const getClass = (prefix: string, type: string) => {
-      return prefix
-        ? type
-          ? `nut-row-${prefix}-${type}`
-          : ''
-        : `nut-row-${type}`;
+      return prefix ? (type ? `nut-row-${prefix}-${type}` : '') : `nut-row-${type}`;
     };
     const getClasses = () => {
       return `
               ${getClass('', props.type)}
               ${getClass('justify', props.justify)}
               ${getClass('align', props.align)}
-              ${getClass('flex', props.wrap)}
+              ${getClass('flex', props.flexWrap)}
               ${prefixCls}
               `;
     };
-
     return {
       getClasses
     };

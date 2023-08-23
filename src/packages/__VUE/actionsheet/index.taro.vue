@@ -6,40 +6,40 @@
       position="bottom"
       round
       @click-overlay="close"
+      :closeOnClickOverlay="closeAbled"
     >
       <view class="nut-actionsheet-panel">
         <view v-if="title" class="nut-actionsheet-title">{{ title }}</view>
-        <view class="nut-actionsheet-item desc" v-if="description">{{
-          description
-        }}</view>
-        <view class="nut-actionsheet-menu" v-if="menuItems.length">
-          <view
-            v-for="(item, index) of menuItems"
-            class="nut-actionsheet-item"
-            :class="{ 'nut-actionsheet-item-disabled': item.disable }"
-            :style="{ color: isHighlight(item) }"
-            :key="index"
-            @click="chooseItem(item, index)"
-            >{{ item[optionTag]
-            }}<view class="subdesc">{{ item[optionSubTag] }}</view>
+        <slot></slot>
+        <view v-if="!slotDefault">
+          <view class="nut-actionsheet-item desc" v-if="description">{{ description }}</view>
+          <view class="nut-actionsheet-menu" v-if="menuItems.length">
+            <view
+              v-for="(item, index) of menuItems"
+              class="nut-actionsheet-item"
+              :class="{ 'nut-actionsheet-item-disabled': item.disable, 'nut-actionsheet-item-loading': item.loading }"
+              :style="{ color: isHighlight(item) || item.color }"
+              :key="index"
+              @click="chooseItem(item, index)"
+            >
+              <nut-icon v-if="item.loading" name="loading"> </nut-icon>
+              <view v-else> {{ item[optionTag] }}</view>
+              <view class="subdesc">{{ item[optionSubTag] }}</view>
+            </view>
           </view>
-        </view>
-        <view
-          class="nut-actionsheet-cancel"
-          v-if="cancelTxt"
-          @click="cancelActionSheet"
-        >
-          {{ cancelTxt }}
+          <view class="nut-actionsheet-cancel" v-if="cancelTxt" @click="cancelActionSheet">
+            {{ cancelTxt }}
+          </view>
         </view>
       </view>
     </nut-popup>
   </view>
 </template>
-<script>
-import { createComponent } from '../../utils/create';
-import { computed } from 'vue';
+<script lang="ts">
+import { createComponent } from '@/packages/utils/create';
+import { computed, useSlots } from 'vue';
 const { componentName, create } = createComponent('actionsheet');
-import { popupProps } from '../popup/index.vue';
+import { popupProps } from '../popup/props';
 export default create({
   props: {
     ...popupProps,
@@ -74,11 +74,16 @@ export default create({
     menuItems: {
       type: Array,
       default: () => []
+    },
+    closeAbled: {
+      type: Boolean,
+      default: true
     }
   },
-  emits: ['cancel', 'choose', 'update:visible'],
+  emits: ['cancel', 'choose', 'update:visible', 'close'],
 
   setup(props, { emit }) {
+    const slotDefault = !!useSlots().default;
     const classes = computed(() => {
       const prefixCls = componentName;
       return {
@@ -86,11 +91,8 @@ export default create({
       };
     });
 
-    const isHighlight = (item) => {
-      return props.chooseTagValue &&
-        props.chooseTagValue === item[props.optionTag]
-        ? props.color
-        : '#1a1a1a';
+    const isHighlight = (item: { [x: string]: string }) => {
+      return props.chooseTagValue && props.chooseTagValue === item[props.optionTag] ? props.color : '';
     };
 
     const cancelActionSheet = () => {
@@ -98,19 +100,20 @@ export default create({
       emit('update:visible', false);
     };
 
-    const chooseItem = (item, index) => {
-      if (!item.disable) {
+    const chooseItem = (item: { disable: boolean; loading: boolean }, index: any) => {
+      if (!item.disable && !item.loading) {
         emit('choose', item, index);
         emit('update:visible', false);
       }
     };
 
-    const close = () => {
-      emit('close');
+    const close = (e: Event) => {
+      emit('close', e);
       emit('update:visible', false);
     };
 
     return {
+      slotDefault,
       isHighlight,
       cancelActionSheet,
       chooseItem,

@@ -1,19 +1,19 @@
 <template>
   <view :class="classes" @click="onClick" :style="style">
     <view class="switch-button">
-      <nut-icon v-if="loading" :name="name" :size="size" :color="color"></nut-icon>
+      <nut-icon v-if="loading" :name="name" v-bind="$attrs" :size="size" :color="color"></nut-icon>
       <!-- <view v-show="!modelValue" class="close-line"></view> -->
       <template v-if="activeText">
-        <view class="nut-switch-label open" v-show="modelValue">{{ activeText }}</view>
-        <view class="nut-switch-label close" v-show="!modelValue">{{ inactiveText }}</view>
+        <view class="nut-switch-label open" v-show="isActive">{{ activeText }}</view>
+        <view class="nut-switch-label close" v-show="!isActive">{{ inactiveText }}</view>
       </template>
     </view>
   </view>
 </template>
 
 <script lang="ts">
-import { computed } from 'vue';
-import { createComponent } from '../../utils/create';
+import { computed, watch } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('switch');
 
 export default create({
@@ -67,7 +67,7 @@ export default create({
       default: ''
     }
   },
-  emits: ['change', 'update:modelValue'],
+  emits: ['change', 'update:modelValue', 'update:loading'],
   setup(props, { emit }) {
     const isActive = computed(() => props.modelValue === props.activeValue);
     const classes = computed(() => {
@@ -86,18 +86,32 @@ export default create({
       };
     });
 
+    let updateType = '';
+
     const onClick = (event: Event) => {
       if (props.disable || props.loading) return;
       const value = isActive.value ? props.inactiveValue : props.activeValue;
+      updateType = 'click';
       emit('update:modelValue', value);
-      emit('update:loading');
       emit('change', value, event);
     };
+
+    watch(
+      () => props.modelValue,
+      (v) => {
+        if (updateType == 'click') {
+          updateType = '';
+        } else {
+          emit('change', v);
+        }
+      }
+    );
 
     return {
       classes,
       style,
-      onClick
+      onClick,
+      isActive
     };
   }
 });

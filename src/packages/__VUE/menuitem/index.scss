@@ -1,15 +1,26 @@
+.nut-theme-dark {
+  .nut-menu-item__content {
+    .nut-menu-item__option {
+      color: $dark-color;
+    }
+  }
+}
+
 .nut-menu-item {
   .active {
-    font-weight: 500;
+    font-weight: $menu-active-item-font-weight;
+    color: $menu-item-active-text-color !important;
   }
 }
 
 .nut-menu-item__content {
   padding: $menu-item-content-padding;
   max-height: $menu-item-content-max-height;
-  overflow-y: auto;
   display: flex;
   flex-wrap: wrap;
+  &.nut-menu-item__overflow {
+    overflow-y: auto;
+  }
 
   .nut-menu-item__option {
     color: $title-color;
@@ -25,15 +36,9 @@
   }
 }
 
-.nut-menu__overlay {
-  position: absolute;
-  top: auto !important;
-}
-
 .nut-menu__pop {
   transition: all 0 ease 0;
   transform: none;
-  top: auto !important;
 }
 
 .placeholder-element {
@@ -43,4 +48,8 @@
   right: 0;
   z-index: $menu-bar-opened-z-index;
   background-color: transparent;
+
+  &.up {
+    bottom: -$menu-bar-line-height;
+  }
 }

@@ -1,56 +1,78 @@
 <template>
   <div class="demo">
-    <h2>基础用法</h2>
-    <nut-cell>
-      <ul class="infiniteUl" id="scroll">
-        <nut-infiniteloading container-id="scroll" :use-window="false" :has-more="hasMore" @load-more="loadMore">
-          <li class="infiniteLi" v-for="(item, index) in defultList" :key="index">{{ item }}</li>
-        </nut-infiniteloading>
-      </ul>
-    </nut-cell>
-
-    <h2>下拉刷新</h2>
-    <nut-cell>
-      <ul class="infiniteUl" id="refreshScroll">
-        <nut-infiniteloading
-          pull-icon="JD"
-          container-id="refreshScroll"
-          :use-window="false"
-          :is-open-refresh="true"
-          :has-more="refreshHasMore"
-          @load-more="refreshLoadMore"
-          @refresh="refresh"
-        >
-          <li class="infiniteLi" v-for="(item, index) in refreshList" :key="index">{{ item }}</li>
-        </nut-infiniteloading>
-      </ul>
-    </nut-cell>
-
-    <h2>自定义加载文案</h2>
-    <nut-cell>
-      <ul class="infiniteUl" id="customScroll">
-        <nut-infiniteloading
-          load-txt="loading"
-          load-more-txt="没有啦～"
-          container-id="customScroll"
-          :use-window="false"
-          :has-more="customHasMore"
-          @load-more="customLoadMore"
-        >
-          <li class="infiniteLi" v-for="(item, index) in customList" :key="index">{{ item }}</li>
-        </nut-infiniteloading>
-      </ul>
-    </nut-cell>
+    <nut-cell-group :title="translate('basic')">
+      <nut-cell>
+        <ul class="infiniteUl" id="scroll">
+          <nut-infiniteloading container-id="scroll" :use-window="false" :has-more="hasMore" @load-more="loadMore">
+            <li class="infiniteLi" v-for="(item, index) in defultList" :key="index">{{ item }}</li>
+          </nut-infiniteloading>
+        </ul>
+      </nut-cell>
+    </nut-cell-group>
+    <nut-cell-group :title="translate('pullRefresh')">
+      <nut-cell>
+        <ul class="infiniteUl" id="refreshScroll">
+          <nut-infiniteloading
+            pull-icon="JD"
+            container-id="refreshScroll"
+            :use-window="false"
+            :is-open-refresh="true"
+            :has-more="refreshHasMore"
+            @load-more="refreshLoadMore"
+            @refresh="refresh"
+          >
+            <li class="infiniteLi" v-for="(item, index) in refreshList" :key="index">{{ item }}</li>
+          </nut-infiniteloading>
+        </ul>
+      </nut-cell>
+    </nut-cell-group>
+    <nut-cell-group :title="translate('customTxt')">
+      <nut-cell>
+        <ul class="infiniteUl" id="customScroll">
+          <nut-infiniteloading
+            load-txt="loading"
+            :load-more-txt="translate('none')"
+            container-id="customScroll"
+            :use-window="false"
+            :has-more="customHasMore"
+            @load-more="customLoadMore"
+          >
+            <li class="infiniteLi" v-for="(item, index) in customList" :key="index">{{ item }}</li>
+          </nut-infiniteloading>
+        </ul>
+      </nut-cell>
+    </nut-cell-group>
   </div>
 </template>
 
 <script lang="ts">
 import { onMounted, ref, reactive, toRefs, getCurrentInstance } from 'vue';
-import { createComponent } from '../../utils/create';
-const { createDemo } = createComponent('infiniteloading');
+import { createComponent } from '@/packages/utils/create';
+const { createDemo, translate } = createComponent('infiniteloading');
+import { useTranslate } from '@/sites/assets/util/useTranslate';
+
+const initTranslate = () =>
+  useTranslate({
+    'zh-CN': {
+      basic: '基础用法',
+      pullRefresh: '下拉刷新',
+      customTxt: '自定义加载文案',
+      none: '没有啦~',
+      success: '刷新成功'
+    },
+    'en-US': {
+      basic: 'Basic Usage',
+      pullRefresh: 'Pull to refresh',
+      customTxt: 'Custom loading copywriting',
+      none: 'No more',
+      success: 'Refresh success'
+    }
+  });
+
 export default createDemo({
   props: {},
   setup() {
+    initTranslate();
     let { proxy } = getCurrentInstance() as any;
 
     const hasMore = ref(true);
@@ -58,9 +80,9 @@ export default createDemo({
     const refreshHasMore = ref(true);
 
     const data = reactive({
-      defultList: [''],
-      customList: [''],
-      refreshList: ['']
+      defultList: [],
+      customList: [],
+      refreshList: []
     });
 
     const loadMore = (done) => {
@@ -101,7 +123,9 @@ export default createDemo({
 
     const refresh = (done) => {
       setTimeout(() => {
-        proxy.$toast.text('刷新成功');
+        proxy.$toast.text(translate('success'));
+        data.refreshList = data.refreshList.slice(0, 10);
+        refreshHasMore.value = true;
         done();
       }, 1000);
     };
@@ -125,6 +149,7 @@ export default createDemo({
       refreshHasMore,
       refreshLoadMore,
       refresh,
+      translate,
       ...toRefs(data)
     };
   }
@@ -132,6 +157,11 @@ export default createDemo({
 </script>
 
 <style lang="scss" scoped>
+.nut-theme-dark {
+  .infiniteLi {
+    color: $dark-color;
+  }
+}
 .infiniteUl {
   height: 300px;
   width: 100%;

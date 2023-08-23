@@ -1,114 +1,103 @@
 <template>
-  <view :class="classes">
-    <view class="nut-navbar__left">
-      <nut-icon
-        v-if="leftShow"
-        color="#979797"
-        name="left"
-        @click="handleLeft"
-      ></nut-icon>
-    </view>
-    <view
-      class="nut-navbar__title"
-      :class="{ icon }"
-      v-if="title || titIcon || tabs"
-    >
-      <view v-if="title" @click="handleCenter">{{ title }}</view>
-      <nut-icon
-        v-if="titIcon"
-        class="icon"
-        :name="titIcon"
-        @click="handleCenterIcon"
-      ></nut-icon>
-      <view class="tab-title">
-        <view
-          :class="[
-            'tab-title-box',
-            { 'nut-tab-active': activeIndex == item.id || activeIndex == index }
-          ]"
-          @click="switchTitle(item.id, item.name)"
-          v-for="(item, index) in tabs"
-          :key="item.id"
-        >
-          {{ item.name }}
-        </view>
+  <view v-if="fixed && placeholder" class="nut-navbar--placeholder" ref="navBarWrap">
+    <view :class="classes" :style="styles" ref="navBarHtml">
+      <view class="nut-navbar__left" @click="handleLeft">
+        <nut-icon v-if="leftShow" color="#979797" name="left"></nut-icon>
+        <view v-if="leftText" class="nut-navbar__text">{{ leftText }}</view>
+        <slot name="left"></slot>
+      </view>
+      <view class="nut-navbar__title">
+        <view v-if="title" class="title" @click="handleCenter">{{ title }}</view>
+        <nut-icon v-if="titIcon" class="icon" v-bind="$attrs" :name="titIcon" @click="handleCenterIcon"></nut-icon>
+        <slot name="content"></slot>
+      </view>
+      <view class="nut-navbar__right" @click="handleRight">
+        <view v-if="desc" class="nut-navbar__text">{{ desc }}</view>
+        <slot name="right"></slot>
       </view>
     </view>
-    <view class="nut-navbar__right" :class="{ icon }" v-if="desc || icon">
-      <view
-        v-if="desc"
-        :style="{ 'text-align': descTextAlign }"
-        @click="handleClear"
-        >{{ desc }}</view
-      >
-      <template v-if="icon">
-        <view @click="handleSends">
-          <slot name="icons"></slot>
-        </view>
-      </template>
-      <view>
-        <nut-icon
-          v-if="icon"
-          class="rightIcon"
-          :name="icon"
-          @click="handleSend"
-        ></nut-icon>
-      </view>
+  </view>
+  <view v-else :class="classes" :style="styles">
+    <view class="nut-navbar__left" @click="handleLeft">
+      <nut-icon v-if="leftShow" color="#979797" name="left"></nut-icon>
+      <view v-if="leftText" class="nut-navbar__text">{{ leftText }}</view>
+      <slot name="left"></slot>
+    </view>
+    <view class="nut-navbar__title">
+      <view v-if="title" class="title" @click="handleCenter">{{ title }}</view>
+      <nut-icon v-if="titIcon" class="icon" v-bind="$attrs" :name="titIcon" @click="handleCenterIcon"></nut-icon>
+      <slot name="content"></slot>
+    </view>
+    <view class="nut-navbar__right" @click="handleRight">
+      <view v-if="desc" class="nut-navbar__text">{{ desc }}</view>
+      <slot name="right"></slot>
     </view>
   </view>
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
-import { createComponent } from '../../utils/create';
+import { onMounted, computed, toRefs, ref, nextTick } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('navbar');
 export default create({
   props: {
-    leftShow: { type: Boolean, default: true }, //左侧  是否显示返回
+    leftShow: { type: Boolean, default: false }, //左侧  是否显示返回icon
     title: { type: String, default: '' }, //中间  文字标题
     titIcon: { type: String, default: '' }, //中间  标题icon
-    tabs: {
-      type: Array,
-      defaul: () => {
-        return [];
-      }
-    },
-    icon: { type: String, default: '' }, //右侧   按钮图标
+    leftText: { type: String, default: '' }, //左侧文字
     desc: { type: String, default: '' }, //右侧   按钮文字
-
-    defaultIndex: {
-      type: Number,
-      default: 0
+    fixed: {
+      type: Boolean,
+      default: false
+    },
+    safeAreaInsetTop: {
+      type: Boolean,
+      default: false
+    },
+    border: {
+      type: Boolean,
+      default: false
+    },
+    placeholder: {
+      // 生成一个等高的占位元素
+      type: Boolean,
+      default: true
+    },
+    zIndex: {
+      type: [Number, String],
+      default: 10
     }
   },
-  emits: [
-    'click',
-    'on-click-back',
-    'on-click-title',
-    'on-click-right',
-    'on-click-desc',
-    'on-click-icon',
-    'on-click-more',
-    'on-click-clear',
-    'on-click-send',
-    'on-click-slot',
-    'on-click-slot-send',
-    'switch-tab'
-  ],
+  emits: ['on-click-back', 'on-click-title', 'on-click-icon', 'on-click-right'],
   setup(props, { emit }) {
-    const activeIndex = ref(props.defaultIndex);
+    const { border, fixed, safeAreaInsetTop, placeholder, zIndex } = toRefs(props);
+    const navBarWrap = ref(null);
+    const navBarHtml = ref(null);
+    let navHeight = ref(0);
     const classes = computed(() => {
       const prefixCls = componentName;
       return {
-        [prefixCls]: true
+        [prefixCls]: true,
+        [`${prefixCls}--border`]: border.value,
+        [`${prefixCls}--fixed`]: fixed.value,
+        [`${prefixCls}--safe-area-inset-top`]: safeAreaInsetTop.value
       };
     });
 
-    function switchTitle(id: number, name: string) {
-      activeIndex.value = id;
-      console.log(id);
-      emit('switch-tab', activeIndex.value, name);
-    }
+    const styles = computed(() => {
+      return {
+        zIndex: zIndex.value
+      };
+    });
+
+    onMounted(() => {
+      if (fixed.value && placeholder.value) {
+        nextTick(() => {
+          navHeight = navBarHtml?.value?.getBoundingClientRect().height;
+          navBarWrap.value.style.height = navHeight + 'px';
+        });
+      }
+    });
 
     function handleLeft() {
       emit('on-click-back');
@@ -121,37 +110,19 @@ export default create({
       emit('on-click-icon');
     }
 
-    function handleClear() {
-      emit('on-click-clear');
-    }
-
-    function handleMore() {
-      emit('on-click-more');
-    }
-
-    function handleSend() {
-      emit('on-click-send');
-    }
-
-    function handleSlot() {
-      emit('on-click-slot');
-    }
-
-    function handleSends() {
-      emit('on-click-slot-send');
+    function handleRight() {
+      emit('on-click-right');
     }
 
     return {
+      navBarWrap,
+      navBarHtml,
       classes,
+      styles,
       handleLeft,
       handleCenter,
       handleCenterIcon,
-      handleClear,
-      handleSend,
-      handleSlot,
-      handleSends,
-      switchTitle,
-      activeIndex
+      handleRight
     };
   }
 });

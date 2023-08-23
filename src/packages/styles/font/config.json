@@ -3,6 +3,7 @@
   "data": [
     {
       "name": "粗体 Icon",
+      "nameEn": "Bold Icon",
       "icons": [
         "order",
         "refresh",
@@ -29,6 +30,7 @@
     },
     {
       "name": "细体 Icon",
+      "nameEn": "Thin Icon",
       "icons": [
         "ask",
         "tips",
@@ -68,11 +70,19 @@
         "horizontal",
         "date",
         "photograph",
-        "more-s"
+        "more-s",
+        "play-stop",
+        "play-start",
+        "play-double-back",
+        "play-double-forward",
+        "voice",
+        "image",
+        "image-error"
       ]
     },
     {
       "name": "应用图标",
+      "nameEn": "Application Icon",
       "icons": [
         "arrow-up",
         "arrow-down",
@@ -86,12 +96,19 @@
         "heart1",
         "heart-fill",
         "star-n",
-        "star-fill-n"
+        "star-fill-n",
+        "triangle-down",
+        "triangle-up"
       ]
     },
     {
       "name": "基础图标",
+      "nameEn": "Basic Icon",
       "icons": [
+        "rect-up",
+        "rect-down",
+        "rect-left",
+        "rect-right",
         "uploader",
         "mask-close",
         "circle-close",
@@ -115,6 +132,43 @@
         "check-checked",
         "loading",
         "loading1"
+      ]
+    }
+    
+  ],
+  "style":[
+    {
+      "name": "通用动态样式",
+      "nameEn": "Universal Dynamic Style",
+      "icons": [{
+        "name":"dou-arrow-up",
+        "animation-name":"am-jump",
+        "animation-time":"am-infinite"
+      },{
+        "name":"star",
+        "animation-name":"am-blink",
+        "animation-time":"am-infinite"
+      },{
+        "name":"refresh2",
+        "animation-name":"am-rotate",
+        "animation-time":"am-infinite"
+      },{
+        "name":"heart-fill",
+        "animation-name":"am-breathe",
+        "animation-time":"am-infinite"
+      },{
+        "name":"microphone",
+        "animation-name":"am-flash",
+        "animation-time":"am-infinite"
+      },{
+        "name":"download",
+        "animation-name":"am-bounce",
+        "animation-time":"am-infinite"
+      },{
+        "name":"message",
+        "animation-name":"am-shake",
+        "animation-time":"am-infinite"
+      }
       ]
     }
   ]

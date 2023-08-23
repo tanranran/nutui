@@ -1,51 +1,45 @@
 <template>
   <Transition name="overlay-fade">
-    <view v-if="lockScroll" :class="classes" @click="onClick" :style="style" v-show="visible" :catch-move="true">
-      <slot></slot>
-    </view>
-    <view v-else :class="classes" @click="onClick" :style="style" v-show="visible">
+    <view :class="classes" @click="onClick" :style="style" v-show="visible" :catch-move="lockScroll">
       <slot></slot>
     </view>
   </Transition>
 </template>
 <script lang="ts">
-import { CSSProperties, PropType, computed } from 'vue';
-import { createComponent } from '../../utils/create';
+import { CSSProperties, PropType, computed, ComputedRef } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('overlay');
-const overlayProps = {
-  visible: {
-    type: Boolean,
-    default: false
-  },
-  zIndex: {
-    type: [Number, String],
-    default: 2000
-  },
-  duration: {
-    type: [Number, String],
-    default: 0.3
-  },
-  overlayClass: {
-    type: String,
-    default: ''
-  },
-  lockScroll: {
-    type: Boolean,
-    default: true
-  },
-  overlayStyle: {
-    type: Object as PropType<CSSProperties>
-  },
-  closeOnClickOverlay: {
-    type: Boolean,
-    default: true
-  }
-};
-
-export { overlayProps };
 
 export default create({
-  props: overlayProps,
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
+    },
+    zIndex: {
+      type: [Number, String],
+      default: 2000
+    },
+    duration: {
+      type: [Number, String],
+      default: 0.3
+    },
+    overlayClass: {
+      type: String,
+      default: ''
+    },
+    lockScroll: {
+      type: Boolean,
+      default: true
+    },
+    overlayStyle: {
+      type: Object as PropType<CSSProperties>
+    },
+    closeOnClickOverlay: {
+      type: Boolean,
+      default: true
+    }
+  },
   emits: ['click', 'update:visible'],
   setup(props, { emit }) {
     const classes = computed(() => {
@@ -56,9 +50,9 @@ export default create({
       };
     });
 
-    const style = computed(() => {
+    const style: ComputedRef = computed(() => {
       return {
-        animationDuration: `${props.duration}s`,
+        transitionDuration: `${props.duration}s`,
         zIndex: props.zIndex,
         ...props.overlayStyle
       };

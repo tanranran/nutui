@@ -5,9 +5,9 @@
 </template>
 
 <script lang="ts">
-import { computed, reactive, inject, getCurrentInstance, watch } from 'vue';
-import { createComponent } from '../../utils/create';
-import { useExpose } from '../swiper/use-expose';
+import { computed, reactive, inject, getCurrentInstance, onUnmounted, ComputedRef } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+import { useExpose } from '@/packages/utils/useExpose/index';
 const { create, componentName } = createComponent('swiper-item');
 interface IStyle {
   width?: string;
@@ -15,7 +15,6 @@ interface IStyle {
   transform?: string;
 }
 export default create({
-  props: {},
   setup(props, { slots }) {
     const parent = inject('parent') as any;
     parent['relation'](getCurrentInstance());
@@ -30,19 +29,15 @@ export default create({
       };
     });
 
-    const style = computed(() => {
+    const style: ComputedRef = computed(() => {
       const style: IStyle = {};
       const direction = parent?.props.direction;
       if (parent?.size.value) {
-        style[
-          direction === 'horizontal' ? 'width' : 'height'
-        ] = `${parent?.size.value}px`;
+        style[direction === 'horizontal' ? 'width' : 'height'] = `${parent?.size.value}px`;
       }
 
       if (state.offset) {
-        style['transform'] = `translate${
-          direction === 'horizontal' ? 'X' : 'Y'
-        }(${state.offset}px)`;
+        style['transform'] = `translate${direction === 'horizontal' ? 'X' : 'Y'}(${state.offset}px)`;
       }
 
       return style;
@@ -51,6 +46,10 @@ export default create({
     const setOffset = (offset: number) => {
       state.offset = offset;
     };
+
+    onUnmounted(() => {
+      parent['relation'](getCurrentInstance(), 'unmount');
+    });
 
     useExpose({ setOffset });
 

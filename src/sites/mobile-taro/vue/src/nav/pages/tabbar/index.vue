@@ -36,25 +36,33 @@
         activeImg="http://img14.360buyimg.com/uba/jfs/t1/23967/14/1072/6714/5c0f3d61E0ad8991e/8f741953f6e38f15.jpg"
       ></nut-tabbar-item>
     </nut-tabbar>
-    <h2>自定义选中</h2>
-    <nut-tabbar v-model:visible="active">
-      <nut-tabbar-item tab-title="首页" icon="home"></nut-tabbar-item>
+    <h2>自定义图标</h2>
+    <nut-tabbar @tab-switch="tabSwitch">
+      <nut-tabbar-item tab-title="首页1">
+        <template #icon="props">
+          <img v-if="props.active" :src="activeImg" />
+          <img v-else :src="unactiveImg" />
+        </template>
+      </nut-tabbar-item>
       <nut-tabbar-item tab-title="分类" icon="category"></nut-tabbar-item>
       <nut-tabbar-item tab-title="发现" icon="find"></nut-tabbar-item>
-      <nut-tabbar-item tab-title="购物车" icon="cart"></nut-tabbar-item>
-      <nut-tabbar-item tab-title="我的" icon="my"></nut-tabbar-item>
+    </nut-tabbar>
+
+    <h2>自定义选中</h2>
+    <nut-tabbar v-model:visible="active" @tab-switch="tabSwitch">
+      <nut-tabbar-item tab-title="首页" name="home" icon="home"></nut-tabbar-item>
+      <nut-tabbar-item tab-title="分类" name="home1" icon="category"></nut-tabbar-item>
+      <nut-tabbar-item tab-title="发现" name="home2" icon="find"></nut-tabbar-item>
+      <nut-tabbar-item tab-title="购物车" name="home3" icon="cart"></nut-tabbar-item>
+      <nut-tabbar-item tab-title="我的" name="home4" icon="my"></nut-tabbar-item>
     </nut-tabbar>
 
     <h2>徽标提示</h2>
     <nut-tabbar>
       <nut-tabbar-item tab-title="首页" icon="home" num="11"></nut-tabbar-item>
-      <nut-tabbar-item tab-title="分类" icon="category"></nut-tabbar-item>
+      <nut-tabbar-item tab-title="分类" icon="category" :dot="true"></nut-tabbar-item>
       <nut-tabbar-item tab-title="发现" icon="find"></nut-tabbar-item>
-      <nut-tabbar-item
-        tab-title="购物车"
-        icon="cart"
-        num="110"
-      ></nut-tabbar-item>
+      <nut-tabbar-item tab-title="购物车" icon="cart" num="110"></nut-tabbar-item>
       <nut-tabbar-item tab-title="我的" icon="my"></nut-tabbar-item>
     </nut-tabbar>
 
@@ -73,20 +81,12 @@
       <nut-tabbar-item tab-title="发现" icon="find"></nut-tabbar-item>
     </nut-tabbar>
     <h2>固定底部，可自由跳转</h2>
-    <nut-tabbar :bottom="true">
+    <nut-tabbar :bottom="true" :safeAreaInsetBottom="true">
       <nut-tabbar-item tab-title="首页" href="" icon="home"></nut-tabbar-item>
       <nut-tabbar-item tab-title="分类" icon="category"></nut-tabbar-item>
       <nut-tabbar-item tab-title="发现" icon="find"></nut-tabbar-item>
-      <nut-tabbar-item
-        tab-title="购物车"
-        href="https://m.jd.com"
-        icon="cart"
-      ></nut-tabbar-item>
-      <nut-tabbar-item
-        tab-title="我的"
-        href="######"
-        icon="my"
-      ></nut-tabbar-item>
+      <nut-tabbar-item tab-title="购物车" href="https://m.jd.com" icon="cart"></nut-tabbar-item>
+      <nut-tabbar-item tab-title="我的" href="######" icon="my"></nut-tabbar-item>
     </nut-tabbar>
   </div>
 </template>
@@ -96,12 +96,20 @@ import { ref } from 'vue';
 export default {
   props: {},
   setup() {
-    const active = ref(2);
+    const active = ref('home1');
     function tabSwitch(item: object, index: number) {
       console.log(item, index);
     }
+    const activeImg = ref(
+      'https://img11.360buyimg.com/imagetools/jfs/t1/70423/4/20553/3652/62e74629E23ba550e/aeeed0e3b9f43ae6.png'
+    );
+    const unactiveImg = ref(
+      'https://img13.360buyimg.com/imagetools/jfs/t1/23319/19/18329/3084/62e7c346E957c54ef/6c3e8a49e52b76f2.png'
+    );
     return {
       active,
+      activeImg,
+      unactiveImg,
       tabSwitch
     };
   }

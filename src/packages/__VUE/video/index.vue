@@ -13,12 +13,7 @@
     >
       <source :src="source.src" :type="source.type" />
     </video>
-    <div
-      class="playing-mask"
-      ref="touchMask"
-      v-if="showToolbox && !isDisabled"
-      @click="play"
-    ></div>
+    <div class="playing-mask" ref="touchMask" v-if="showToolbox && !isDisabled" @click="play"></div>
     <div
       class="nut-video-play-btn"
       v-if="showToolbox && !isDisabled"
@@ -51,33 +46,21 @@
         </div>
       </div>
       <div class="duration-time">{{ videoSet.totalTime }}</div>
-      <div
-        class="volume"
-        @click="handleMuted"
-        :class="{ muted: state.isMuted }"
-      ></div>
+      <div class="volume" @click="handleMuted" :class="{ muted: state.isMuted }"></div>
       <div class="fullscreen-icon" @click="fullScreen"></div>
     </div>
     <!-- 错误弹窗 -->
     <div class="nut-video-error" v-show="state.isError">
-      <p class="lose">视频加载失败</p>
-      <p class="retry" @click="retry">点击重试</p>
+      <p class="lose">{{ translate('errorTip') }}</p>
+      <p class="retry" @click="retry">{{ translate('clickRetry') }}</p>
     </div>
   </div>
 </template>
 <script lang="ts">
-import {
-  computed,
-  reactive,
-  ref,
-  toRefs,
-  watch,
-  nextTick,
-  onMounted
-} from 'vue';
-import { createComponent } from '../../utils/create';
-import { throttle } from '../../utils/throttle.js';
-const { create } = createComponent('video');
+import { computed, reactive, ref, toRefs, watch, nextTick, onMounted } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+import { throttle } from '@/packages/utils/throttle';
+const { create, translate } = createComponent('video');
 
 export default create({
   props: {
@@ -107,7 +90,7 @@ export default create({
     }
   },
   components: {},
-  emits: ['click', 'play', 'pause', 'playend'],
+  emits: ['click', 'play', 'pause', 'playend', 'time'],
 
   setup(props, { emit }) {
     const state = reactive({
@@ -147,23 +130,27 @@ export default create({
       },
       showTouchMask: false
     });
-    const root = ref<HTMLElement>();
+    const root = ref(null);
     const isDisabled = computed(() => {
       return props.options.disabled;
     });
 
-    watch(props.source, (newValue) => {
-      if (newValue.src) {
-        nextTick(() => {
-          (state.videoElm as any).load();
-        });
-      }
-    });
+    watch(
+      () => props.source,
+      (newValue) => {
+        if (newValue.src) {
+          nextTick(() => {
+            (state.videoElm as any).load();
+          });
+        }
+      },
+      { immediate: true, deep: true }
+    );
 
     watch(
-      props.options,
+      () => props.options,
       (newValue) => {
-        state.state.isMuted = newValue.muted ? newValue.muted : false;
+        state.state.isMuted = newValue ? newValue.muted : false;
       },
       { immediate: true }
     );
@@ -171,7 +158,9 @@ export default create({
       (state.videoElm as any) = root.value;
 
       if (props.options.autoplay) {
-        (state.videoElm as any).play();
+        setTimeout(() => {
+          (state.videoElm as any).play();
+        }, 200);
       }
 
       if (props.options.touchPlay) {
@@ -179,19 +168,10 @@ export default create({
       }
 
       if (props.options.playsinline) {
-        (state.videoElm as any).setAttribute(
-          'playsinline',
-          props.options.playsinline
-        );
-        (state.videoElm as any).setAttribute(
-          'webkit-playsinline',
-          props.options.playsinline
-        );
+        (state.videoElm as any).setAttribute('playsinline', props.options.playsinline);
+        (state.videoElm as any).setAttribute('webkit-playsinline', props.options.playsinline);
         (state.videoElm as any).setAttribute('x5-video-player-type', 'h5-page');
-        (state.videoElm as any).setAttribute(
-          'x5-video-player-fullscreen',
-          false
-        );
+        (state.videoElm as any).setAttribute('x5-video-player-fullscreen', false);
       }
       volumeHandle();
 
@@ -208,10 +188,7 @@ export default create({
         });
         (state.videoElm as any).addEventListener('ended', playEnded);
 
-        (state.videoElm as any).addEventListener(
-          'timeupdate',
-          throttle(getPlayTime, 100, 1)
-        );
+        (state.videoElm as any).addEventListener('timeupdate', throttle(getPlayTime, 1000));
       }
     };
 
@@ -222,9 +199,7 @@ export default create({
       (state.player.$player as any) = $player;
       (state.progressBar.progressElm as any) = $progress;
       (state.progressBar.pos as any) = $progress.getBoundingClientRect();
-      state.videoSet.progress.width = Math.round(
-        $progress.getBoundingClientRect().width
-      );
+      state.videoSet.progress.width = Math.round($progress.getBoundingClientRect().width);
     };
 
     const play = () => {
@@ -237,16 +212,16 @@ export default create({
         // 播放状态
         if (state.state.playing) {
           try {
-            (state.videoElm as any).play();
+            setTimeout(() => {
+              (state.videoElm as any).play();
+            }, 200);
+
             // 监听缓存进度
             (state.videoElm as any).addEventListener('progress', () => {
               getLoadTime();
             });
             // 监听播放进度
-            (state.videoElm as any).addEventListener(
-              'timeupdate',
-              throttle(getPlayTime, 100, 1)
-            );
+            (state.videoElm as any).addEventListener('timeupdate', throttle(getPlayTime, 1000, 1));
             // 监听结束
             (state.videoElm as any).addEventListener('ended', playEnded);
             emit('play', state.videoElm);
@@ -286,24 +261,17 @@ export default create({
 
     const getLoadTime = () => {
       if (state.videoSet.loaded)
-        state.videoSet.loaded =
-          ((state.videoElm as any).buffered.end(0) /
-            (state.videoElm as any).duration) *
-          100;
+        state.videoSet.loaded = ((state.videoElm as any).buffered.end(0) / (state.videoElm as any).duration) * 100;
     };
 
     const getPlayTime = () => {
-      const percent =
-        (state.videoElm as any).currentTime / (state.videoElm as any).duration;
-      state.videoSet.progress.current = Math.round(
-        state.videoSet.progress.width * percent
-      );
+      const percent = (state.videoElm as any).currentTime / (state.videoElm as any).duration;
+      state.videoSet.progress.current = Math.round(state.videoSet.progress.width * percent);
 
       // 赋值时长
       state.videoSet.totalTime = timeFormat((state.videoElm as any).duration);
-      state.videoSet.displayTime = timeFormat(
-        (state.videoElm as any).currentTime
-      );
+      state.videoSet.displayTime = timeFormat((state.videoElm as any).currentTime);
+      emit('time', state.videoSet.displayTime, state.videoSet.totalTime);
     };
 
     const playEnded = () => {
@@ -343,10 +311,8 @@ export default create({
       }
       state.videoSet.progress.current = offsetX;
 
-      let percent =
-        state.videoSet.progress.current / state.videoSet.progress.width;
-      (state.videoElm as any).duration &&
-        setPlayTime(percent, (state.videoElm as any).duration);
+      let percent = state.videoSet.progress.current / state.videoSet.progress.width;
+      (state.videoElm as any).duration && setPlayTime(percent, (state.videoElm as any).duration);
     };
 
     const touchSlidEnd = (e: any) => {
@@ -355,8 +321,7 @@ export default create({
       state.videoSet.progress.current = offsetX;
       // 这里的offsetX都是正数
       let percent = offsetX / state.videoSet.progress.width;
-      (state.videoElm as any).duration &&
-        setPlayTime(percent, (state.videoElm as any).duration);
+      (state.videoElm as any).duration && setPlayTime(percent, (state.videoElm as any).duration);
     };
 
     const setPlayTime = (percent: number, totalTime: number) => {
@@ -395,7 +360,8 @@ export default create({
       touchSlidMove,
       touchSlidEnd,
       retry,
-      fullScreen
+      fullScreen,
+      translate
     };
   }
 });

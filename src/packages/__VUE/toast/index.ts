@@ -1,5 +1,6 @@
-import { createVNode, render } from 'vue';
+import { createVNode, render, h } from 'vue';
 import Toast from './index.vue';
+import { CreateComponent } from '@/packages/utils/create';
 const defaultOptions = {
   msg: '',
   id: '',
@@ -7,17 +8,18 @@ const defaultOptions = {
   center: true, // 未实现
   type: 'text',
   title: '',
-  customClass: '', // 未实现
-  bottom: '30px', // 未实现
-  size: 'base', // 未实现
-  icon: null, // 未实现
+  customClass: '',
+  bottom: '30px',
+  size: 'base',
+  iconSize: '20',
+  icon: null,
   textAlignCenter: true, // 未实现
   loadingRotate: true, // 未实现
-  bgColor: 'rgba(0, 0, 0, .8)',
+  bgColor: '',
   onClose: null, // 未实现
   unmount: null,
   cover: false, //透明遮罩层 // 未实现
-  coverColor: 'rgba(0, 0, 0, 0)', // 未实现
+  coverColor: '', // 未实现
   closeOnClickOverlay: false // 未实现
 };
 
@@ -54,7 +56,7 @@ const updateToast = (opts: any) => {
     }
     const instance: any = createVNode(Toast, opts);
     render(instance, container);
-    return instance.component.ctx;
+    return ToastFunction;
   }
 };
 
@@ -74,12 +76,12 @@ const mountToast = (opts: any) => {
   opts.id = _id;
   idsMap.push(opts.id);
   optsMap.push(opts);
-  const container = document.createElement('div');
-  container.id = opts.id;
-  const instance: any = createVNode(Toast, opts);
-  render(instance, container);
-  document.body.appendChild(container);
-  return instance.component.ctx;
+
+  const { unmount } = CreateComponent(opts, {
+    wrapper: Toast
+  });
+
+  return ToastFunction;
 };
 
 const errorMsg = (msg: string) => {

@@ -1,51 +1,75 @@
 <template>
   <div class="demo full">
-    <h2>基础用法</h2>
+    <h2>{{ translate('basic') }}</h2>
     <div class="demo__piece">
-      <nut-circleprogress :progress="10"> </nut-circleprogress>
+      <nut-circleprogress :progress="20"> </nut-circleprogress>
+    </div>
+    <h2>{{ translate('customWidth') }}</h2>
+    <div class="demo__piece">
+      <nut-circleprogress :progress="50" strokeWidth="10"> </nut-circleprogress>
     </div>
 
-    <h2>环形进度条自定义样式</h2>
+    <h2>{{ translate('Gradient') }}</h2>
     <div class="demo__piece">
-      <nut-circleprogress :progress="50" :progress-option="progressOption"> </nut-circleprogress>
+      <nut-circleprogress :progress="50" color="red" />
+      <nut-circleprogress :progress="100" :color="gradientColor" />
     </div>
-
-    <h2>环形进度条自定义内容</h2>
+    <h2>{{ translate('customSize') }}</h2>
     <div class="demo__piece">
-      <nut-circleprogress :progress="50" :is-auto="isAuto">
-        <div>自定义</div>
-      </nut-circleprogress>
+      <nut-circleprogress :progress="50" radius="60"></nut-circleprogress>
     </div>
-    <h2>动态改变环形进度条的进度</h2>
+    <h2>{{ translate('customContent') }}</h2>
     <div class="demo__piece">
-      <nut-circleprogress :progress="percent" :progress-option="progressOption" :stroke-inner-width="strokeInnerWidth">
-      </nut-circleprogress>
+      <nut-circleprogress :progress="50" radius="60">{{ translate('custom') }}</nut-circleprogress>
+    </div>
+    <h2>{{ translate('dynamicChange') }}</h2>
+    <div class="demo__piece">
+      <nut-circleprogress :progress="percent"> </nut-circleprogress>
     </div>
     <div class="demo__btn">
-      <nut-button type="primary" @click="setReduceVal">减少</nut-button>
-      <nut-button type="primary" @click="setAddVal">增加</nut-button>
+      <nut-button type="primary" @click="setReduceVal">{{ translate('reduce') }}</nut-button>
+      <nut-button type="primary" @click="setAddVal">{{ translate('add') }}</nut-button>
     </div>
   </div>
 </template>
-
 <script lang="ts">
-import { reactive, ref } from 'vue';
-import { createComponent } from '../../utils/create';
-const { createDemo } = createComponent('circleprogress');
+import { ref } from 'vue';
+import { createComponent } from '@/packages/utils/create';
+const { createDemo, translate } = createComponent('circleprogress');
+import { useTranslate } from '@/sites/assets/util/useTranslate';
+const initTranslate = () =>
+  useTranslate({
+    'zh-CN': {
+      basic: '基本用法',
+      customWidth: '自定义宽度',
+      Gradient: '渐变色',
+      customSize: '自定义尺寸',
+      customContent: '自定义内容',
+      custom: '自定义',
+      dynamicChange: '动态改变',
+      reduce: '减少',
+      add: '增加'
+    },
+    'en-US': {
+      basic: 'Basic Usage',
+      customWidth: 'Custom Width',
+      Gradient: 'Gradient',
+      custom: 'custom',
+      customContent: 'Custom Content',
+      dynamicChange: 'Dynamic Change',
+      reduce: 'reduce',
+      add: 'add'
+    }
+  });
 export default createDemo({
-  props: {},
   setup() {
-    const progressOption = reactive({
-      radius: 50,
-      strokeOutWidth: 10,
-      backColor: '#d9d9d9',
-      progressColor: 'red'
-    });
-    const percent = ref(50);
-    const strokeInnerWidth = ref(10);
-    const isAuto = ref(true);
+    initTranslate();
+    const gradientColor = {
+      '0%': '#FF5E5E',
+      '100%': '#FFA062'
+    };
+    const percent = ref(30);
     const setAddVal = () => {
-      strokeInnerWidth.value = 10;
       if (percent.value >= 100) {
         return;
       }
@@ -53,18 +77,17 @@ export default createDemo({
     };
     const setReduceVal = () => {
       if (percent.value - 10 <= 0) {
-        strokeInnerWidth.value = 0;
         percent.value = 0;
         return;
       }
       percent.value -= 10;
     };
     return {
-      progressOption,
-      isAuto,
       setAddVal,
       setReduceVal,
-      percent
+      percent,
+      gradientColor,
+      translate
     };
   }
 });
@@ -87,5 +110,13 @@ export default createDemo({
   display: flex;
   justify-content: center;
   background: rgba(255, 255, 255, 1);
+  padding: 10px 0;
+}
+.nut-theme-dark {
+  .demo__piece,
+  .demo__btn {
+    background: black;
+    border-top: none;
+  }
 }
 </style>

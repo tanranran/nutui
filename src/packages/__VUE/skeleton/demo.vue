@@ -1,20 +1,28 @@
 <template>
   <view class="demo">
-    <h2>基础用法</h2>
+    <h2>{{ translate('basic') }}</h2>
 
     <nut-skeleton width="250px" height="15px" animated> </nut-skeleton>
+    <nut-skeleton width="250px" height="15px"> </nut-skeleton>
 
-    <h2>传入多行</h2>
+    <h2>{{ translate('title') }}</h2>
 
     <nut-skeleton width="250px" height="15px" title animated row="3"> </nut-skeleton>
 
-    <h2>显示头像</h2>
-    <nut-skeleton width="250px" height="15px" title animated avatar row="3"> </nut-skeleton>
+    <h2>{{ translate('title1') }}</h2>
+    <nut-skeleton width="250px" height="15px" title animated avatar avatarSize="100px" row="3"> </nut-skeleton>
 
-    <h2>标题段落圆角风格</h2>
+    <h2>{{ translate('title2') }}</h2>
     <nut-skeleton width="250px" height="15px" animated round></nut-skeleton>
 
-    <h2>显示子组件</h2>
+    <h2>{{ translate('title3') }}</h2>
+
+    <div class="pic-compose">
+      <nut-skeleton width="250px" height="15px" title animated row="3" class="item"> </nut-skeleton>
+      <nut-skeleton width="250px" height="15px" title animated row="3" class="item"> </nut-skeleton>
+    </div>
+
+    <h2>{{ translate('title4') }}</h2>
 
     <view class="content">
       <nut-switch v-model="checked" size="15px" />
@@ -27,9 +35,7 @@
           />
           <view class="right-content">
             <view class="title">NutUI</view>
-            <view class="desc"
-              >一套京东风格的轻量级移动端Vue组库，提供丰富的基础组件和业务组件，帮助开发者快速搭建移动应用。</view
-            >
+            <view class="desc">{{ translate('desc') }}</view>
           </view>
         </view>
       </nut-skeleton>
@@ -39,15 +45,39 @@
 
 <script lang="ts">
 import { ref } from 'vue';
-import { createComponent } from '../../utils/create';
-const { createDemo } = createComponent('skeleton');
+import { createComponent } from '@/packages/utils/create';
+const { createDemo, translate } = createComponent('skeleton');
+import { useTranslate } from '@/sites/assets/util/useTranslate';
+const initTranslate = () =>
+  useTranslate({
+    'zh-CN': {
+      basic: '基本用法',
+      title: '传入多行',
+      title1: '显示头像',
+      title2: '标题段落圆角风格',
+      title3: '图片组合',
+      title4: '显示子组件',
+      desc: '一套京东风格的轻量级移动端Vue组库，提供丰富的基础组件和业务组件，帮助开发者快速搭建移动应用。'
+    },
+    'en-US': {
+      basic: 'Basic Usage',
+      title: 'Incoming multiline',
+      title1: 'Show Faces',
+      title2: 'Title paragraph fillet style',
+      title3: 'Picture combination',
+      title4: 'Display subcomponents',
+      desc: 'A set of JD style lightweight mobile terminal Vue group library provides rich basic components and business components to help developers quickly build mobile applications.'
+    }
+  });
 
 export default createDemo({
   setup() {
+    initTranslate();
     const checked = ref(false);
 
     return {
-      checked
+      checked,
+      translate
     };
   }
 });
@@ -55,7 +85,9 @@ export default createDemo({
 
 <style lang="scss">
 .content {
+  margin-bottom: 20px;
   .nut-switch {
+    display: flex;
     margin: 0 16px 8px 0;
   }
   .container {
@@ -75,6 +107,13 @@ export default createDemo({
         color: rgba(154, 155, 157, 1);
       }
     }
+  }
+}
+.pic-compose {
+  display: flex;
+  justify-content: space-between;
+  .item {
+    width: 47%;
   }
 }
 </style>

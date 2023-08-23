@@ -16,8 +16,8 @@
           'background-color': bgColor
         }"
       >
-        <view v-if="hasIcon" class="nut-toast-icon-wrapper">
-          <nut-icon size="20" color="#ffffff" :name="icon"></nut-icon>
+        <view v-if="hasIcon" :class="toastIconWrapperClass">
+          <nut-icon :size="iconSize" v-bind="$attrs" color="#ffffff" :name="icon"></nut-icon>
         </view>
         <div v-if="title" class="nut-toast-title">
           {{ title }}
@@ -27,9 +27,9 @@
     </view>
   </Transition>
 </template>
-<script>
+<script lang="ts">
 import { toRefs, toRef, reactive, computed, watch, onMounted } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 const { create } = createComponent('toast');
 import Icon from '../icon/index.vue';
 export default create({
@@ -57,6 +57,10 @@ export default create({
       type: [String, Number],
       default: 'base'
     },
+    iconSize: {
+      type: String,
+      default: '20'
+    },
     icon: String,
     textAlignCenter: {
       type: Boolean,
@@ -68,7 +72,7 @@ export default create({
     },
     bgColor: {
       type: String,
-      default: 'rgba(0, 0, 0, .8)'
+      default: ''
     },
     onClose: Function,
     unmount: Function,
@@ -78,7 +82,7 @@ export default create({
     },
     coverColor: {
       type: String,
-      default: 'rgba(0, 0, 0, 0)'
+      default: ''
     },
     title: {
       type: String,
@@ -89,8 +93,9 @@ export default create({
       default: false
     }
   },
-  setup(props) {
-    let timer;
+  emits: ['close'],
+  setup(props: any, { emit }) {
+    let timer: number | null | undefined;
     const state = reactive({
       mounted: false
     });
@@ -117,6 +122,7 @@ export default create({
     const clickCover = () => {
       if (props.closeOnClickOverlay) {
         hide();
+        emit('close');
       }
     };
 
@@ -151,7 +157,9 @@ export default create({
         'nut-toast-' + props.size
       ];
     });
-
+    const toastIconWrapperClass = computed(() => {
+      return ['nut-toast-icon-wrapper', { 'nut-toast-icon-no-animation': !props.loadingRotate }];
+    });
     const onAfterLeave = () => {
       clearTimer();
       props.unmount(props.id);
@@ -164,6 +172,7 @@ export default create({
       clickCover,
       hasIcon,
       toastBodyClass,
+      toastIconWrapperClass,
       onAfterLeave
     };
   }

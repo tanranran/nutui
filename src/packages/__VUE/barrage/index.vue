@@ -1,27 +1,19 @@
 <template>
-  <view ref="dmBody" :class="classes">
-    <view ref="dmContainer" class="dmContainer"></view>
-    <!-- <view v-for="(item, index) of danmuList" :key="'danmu'+index" class="dmitem">
-      {{item}}
-    </view> -->
-  </view>
+  <div ref="dmBody" :class="classes">
+    <div ref="dmContainer" :class="['dmContainer', $slots.default && 'slotContainer']">
+      <div :class="['slotBody', 'slotBody' + classTime]" v-if="$slots.default">
+        <slot></slot>
+      </div>
+    </div>
+  </div>
 </template>
 <script lang="ts">
-import {
-  computed,
-  onMounted,
-  onUnmounted,
-  onDeactivated,
-  ref,
-  reactive,
-  toRefs,
-  watch,
-  nextTick
-} from 'vue';
-import { createComponent } from '../../utils/create';
+import { computed, onMounted, onUnmounted, ref, watch, nextTick, useSlots } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 const { componentName, create } = createComponent('barrage');
 
 export default create({
+  name: 'barrage',
   props: {
     danmu: {
       type: Array,
@@ -33,7 +25,7 @@ export default create({
     },
     speeds: {
       type: Number,
-      default: 2000
+      default: 5000
     },
     rows: {
       type: Number,
@@ -48,9 +40,10 @@ export default create({
       default: true
     }
   },
-  emits: ['click'],
+  setup(props) {
+    const classTime = new Date().getTime();
+    const slotDefault = !!useSlots().default;
 
-  setup(props, { emit }) {
     const classes = computed(() => {
       const prefixCls = componentName;
       return {
@@ -61,8 +54,8 @@ export default create({
     let dmBody = ref<HTMLDivElement>(document.createElement('div'));
     let dmContainer = ref<HTMLDivElement>(document.createElement('div'));
 
-    let timer: number = 0;
-    const danmuList = ref<any[]>(props.danmu);
+    let timer = 0;
+    const danmuList: any = ref(props.danmu);
     const rows = ref<number>(props.rows);
     const top = ref<number>(props.top);
     const index = ref<number>(0);
@@ -70,67 +63,137 @@ export default create({
     const danmuCWidth = ref(0);
 
     onMounted(() => {
-      danmuCWidth.value = dmBody.value.offsetWidth;
-      run();
+      init();
+      if (slotDefault) {
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'hidden') {
+            clearTime();
+            index.value = 0;
+            eleSlot('hidden');
+          } else if (document.visibilityState === 'visible') {
+            init();
+          }
+        });
+      }
     });
 
     onUnmounted(() => {
-      clearInterval(timer);
-      timer = 0;
+      danmuList.value = [];
+      clearTime();
     });
 
-    onDeactivated(() => {
-      clearInterval(timer);
+    const init = () => {
+      danmuCWidth.value = dmBody.value.offsetWidth;
+      if (slotDefault) {
+        eleSlot('init');
+      }
+      setTimeout(() => {
+        dmBody.value?.style.setProperty('--move-distance', `-${danmuCWidth.value}px`);
+        run();
+      }, 300);
+    };
+
+    const eleSlot = (flag?: string) => {
+      const list = document.getElementsByClassName('slotBody' + classTime);
+      let childrens = list?.[0]?.children || [];
+      const dmList: any[] = [];
+      if (childrens) {
+        Array.from(childrens).forEach((item: any) => {
+          if (flag == 'init') {
+            item.style.opacity = '0';
+            dmList.push(item);
+          } else {
+            item.classList = '';
+            item.style = {};
+          }
+        });
+      }
+      if (flag == 'init') {
+        danmuList.value = dmList;
+      }
+    };
+
+    const clearTime = () => {
+      clearTimeout(timer);
       timer = 0;
-    });
+    };
 
     watch(
       () => props.danmu,
-      (newValue, oldVlaue) => {
-        danmuList.value = [...newValue];
+      (newValue) => {
+        if (props.danmu.length > 0) {
+          danmuList.value = [...newValue];
+        }
       }
     );
 
     const add = (word: string) => {
       const _index = index.value % danmuList.value.length;
-      danmuList.value.splice(_index, 0, word);
+      if (!props.loop && index.value === danmuList.value.length) {
+        danmuList.value.splice(danmuList.value.length, 0, word);
+      } else {
+        danmuList.value.splice(_index, 0, word);
+      }
     };
 
     const run = () => {
-      clearInterval(timer);
-      timer = 0;
-      timer = setInterval(() => {
+      clearTime();
+      timer = setTimeout(() => {
         play();
-        run();
       }, props.frequency);
     };
-
     const play = () => {
-      const _index = props.loop
-        ? index.value % danmuList.value.length
-        : index.value;
+      if (!props.loop && index.value >= danmuList.value.length) {
+        return;
+      }
+      const _index = props.loop ? index.value % danmuList.value.length : index.value;
       let el = document.createElement(`view`);
-      el.innerHTML = danmuList.value[_index] as string;
-      el.classList.add('dmitem');
-      dmContainer.value.appendChild(el);
 
+      if (slotDefault && typeof danmuList.value[_index] == 'object') {
+        el = danmuList.value[_index];
+        el?.classList?.add('dmitem');
+      } else {
+        el.innerHTML = danmuList.value[_index] as string;
+        el.classList.add('dmitem');
+        dmContainer.value.appendChild(el);
+      }
+      // let el = document.createElement(`div`);
+      // el.innerHTML = danmuList.value[_index] as string;
+      // el.classList.add('nut-barrage__item');
+      // dmContainer.value.appendChild(el);
       nextTick(() => {
-        const width = el.offsetWidth;
         const height = el.offsetHeight;
-        el.classList.add('move');
+        el?.classList?.add('move');
         el.style.animationDuration = `${speeds}ms`;
         el.style.top = (_index % rows.value) * (height + top.value) + 20 + 'px';
-        el.style.width = width + 20 + 'px';
-        // el.style.left = "-"+(_index % rows.value) + 'px';
-        el.style.setProperty('--move-distance', `-${danmuCWidth.value}px`);
-        el.dataset.index = `${_index}`;
+        el.style.opacity = '1';
+        if (!slotDefault) {
+          const width = el.offsetWidth;
+          el.style.width = width + 20 + 'px';
+        }
+        // el.style.left = '-' + (_index % rows.value) + 'px';
+        // el.style.setProperty('--move-distance', `-${danmuCWidth.value}px`);
+        // distance.value = '-' + (speeds / 1000) * 150 + '%';
+        // el.dataset.index = `${_index}`;
+
         el.addEventListener('animationend', () => {
-          dmContainer.value.removeChild(el);
+          if (slotDefault) {
+            el.classList.remove('move');
+          } else {
+            dmContainer.value.removeChild(el);
+          }
         });
         index.value++;
+        if (index.value >= danmuList.value.length) {
+          index.value = 0;
+        }
+        el.removeEventListener('animationend', () => {
+          // 回调
+        });
+        run();
       });
     };
-    return { classes, danmuList, dmBody, dmContainer, add };
+    return { classTime, classes, danmuList, dmBody, dmContainer, add };
   }
 });
 </script>

@@ -18,6 +18,11 @@ export default defineConfig({
         target: 'https://nutui.jd.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/devServer/, '')
+      },
+      '/devTheme': {
+        target: 'https://nutui.jd.com/theme/source',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/devTheme/, '')
       }
     }
   },
@@ -87,6 +92,7 @@ export default defineConfig({
     outDir: './dist/3x/',
     // assetsDir: config.version,
     cssCodeSplit: true,
+    cssTarget: ['chrome61'],
     rollupOptions: {
       input: {
         // doc: resolve(__dirname, 'index.html'),
@@ -95,7 +101,8 @@ export default defineConfig({
       output: {
         entryFileNames: `demo-${config.version}/[name].js`,
         chunkFileNames: `demo-${config.version}/[name].js`,
-        assetFileNames: `demo-${config.version}/[name].[ext]`
+        assetFileNames: `demo-${config.version}/[name].[ext]`,
+        plugins: []
       }
     }
   }

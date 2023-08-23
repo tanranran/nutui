@@ -1,6 +1,7 @@
 <template>
   <view :class="classes">
     <textarea
+      ref="textareaRef"
       class="nut-textarea__textarea"
       :style="styles"
       :rows="rows"
@@ -11,16 +12,17 @@
       @blur="blur"
       @focus="focus"
       :maxlength="maxLength"
-      :placeholder="placeholder"
+      :placeholder="placeholder || translate('placeholder')"
+      :autofocus="autofocus"
     />
     <view class="nut-textarea__limit" v-if="limitShow"> {{ modelValue ? modelValue.length : 0 }}/{{ maxLength }}</view>
   </view>
 </template>
 <script lang="ts">
-import { computed, watch } from 'vue';
-import { createComponent } from '../../utils/create';
+import { watch, ref, computed, onMounted, nextTick } from 'vue';
+import { createComponent } from '@/packages/utils/create';
 
-const { componentName, create } = createComponent('textarea');
+const { componentName, create, translate } = createComponent('textarea');
 
 export default create({
   props: {
@@ -30,7 +32,7 @@ export default create({
     },
     textAlign: {
       type: String,
-      default: 'left'
+      default: ''
     },
     limitShow: {
       type: Boolean,
@@ -42,11 +44,11 @@ export default create({
     },
     rows: {
       type: [String, Number],
-      default: ''
+      default: '2'
     },
     placeholder: {
       type: String,
-      default: '请输入内容'
+      default: ''
     },
     readonly: {
       type: Boolean,
@@ -57,6 +59,10 @@ export default create({
       default: false
     },
     autosize: {
+      type: [Boolean, Object],
+      default: false
+    },
+    autofocus: {
       type: Boolean,
       default: false
     }
@@ -65,6 +71,7 @@ export default create({
   emits: ['update:modelValue', 'change', 'blur', 'focus'],
 
   setup(props, { emit }) {
+    const textareaRef = ref();
     const classes = computed(() => {
       const prefixCls = componentName;
       return {
@@ -73,14 +80,50 @@ export default create({
       };
     });
 
-    const styles = computed(() => {
+    onMounted(() => {
+      if (props.modelValue) {
+        emitChange(String(props.modelValue));
+      }
+      if (props.autosize) {
+        nextTick(getContentHeight);
+      }
+    });
+
+    const styles: any = computed(() => {
       return {
-        textAlign: props.textAlign,
-        resize: props.autosize ? 'vertical' : 'none'
+        textAlign: props.textAlign
+        // resize: props.autosize ? 'vertical' : 'none'
       };
     });
 
-    const emitChange = (value: string, event: Event) => {
+    const getContentHeight = () => {
+      let textarea = textareaRef.value;
+      textarea.style.height = 'auto';
+      let height = textarea.scrollHeight;
+      if (typeof props.autosize === 'object') {
+        const { maxHeight, minHeight } = props.autosize;
+        if (maxHeight !== undefined) {
+          height = Math.min(height, maxHeight);
+        }
+        if (minHeight !== undefined) {
+          height = Math.max(height, minHeight);
+        }
+      }
+      if (height) {
+        textarea.style.height = height + 'px';
+      }
+    };
+
+    watch(
+      () => props.modelValue,
+      () => {
+        if (props.autosize) {
+          nextTick(getContentHeight);
+        }
+      }
+    );
+
+    const emitChange = (value: string, event?: Event) => {
       if (props.maxLength && value.length > Number(props.maxLength)) {
         value = value.substring(0, Number(props.maxLength));
       }
@@ -111,11 +154,13 @@ export default create({
     };
 
     return {
+      textareaRef,
       classes,
       styles,
       change,
       focus,
-      blur
+      blur,
+      translate
     };
   }
 });

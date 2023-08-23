@@ -1,7 +1,7 @@
 <template>
   <Transition name="nut-fade" @after-leave="onAfterLeave">
     <view
-      :class="['popup-top', 'nut-notify', `nut-notify--${type}`, { className }]"
+      :class="[`popup-${position}`, 'nut-notify', `nut-notify--${type}`, className]"
       :style="{ color: color, background: background }"
       v-show="visible"
       @click="onClick"
@@ -15,7 +15,7 @@
 </template>
 <script lang="ts">
 import { watch } from 'vue';
-import { createComponent } from '../../utils/create';
+import { createComponent } from '@/packages/utils/create';
 import Popup from '../popup/index.taro.vue';
 const { componentName, create } = createComponent('notify');
 
@@ -40,6 +40,10 @@ export default create({
     visible: {
       type: Boolean,
       default: false
+    },
+    position: {
+      type: String,
+      default: 'top'
     }
   },
   emits: ['update:visible', 'closed', 'click'],
